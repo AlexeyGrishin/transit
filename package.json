@@ -1,0 +1,17 @@
+{
+  "name": "transit",
+  "author": "Alexey Grishin <alexey.grishin@gmail.com>",
+  "version": "0.1.0",
+  "dependencies": {
+    "underscore": "*",
+    "oscar": "*",
+    "winston": "0.7.x",
+    "coffee-script": "*"
+  },
+  "devDependencies": {
+    "jasmine-node": "",
+    "sinon": "*",
+    "jasmine-sinon": ""
+
+  }
+}
