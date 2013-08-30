@@ -37,7 +37,7 @@ class Transit
       req: new Request(userId, data, @_handlers)
       res: new Response ((message) =>
           @sendBack userId, message, (err) =>
-            @_onError(err)
+            @_onError(err) if err
           doNext()), -> doNext()
 
     doNext = (req, res) =>
@@ -55,8 +55,8 @@ class Transit
     doNext()
 
   _onError: (error) ->
-    console.error error
-    console.error error.stack if error.stack
+    console.error error ? "Unknown error"
+    console.error error?.stack if error?.stack
 
   sendBack: (userId, data, cb) ->
     @_server().sendBack(userId, data, cb)

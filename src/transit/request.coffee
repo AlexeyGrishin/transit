@@ -9,7 +9,6 @@ class Request extends Private
     @attr("user", user)
     @attr("data", data)
     @attr("handlers", handlers)
-    @attr("handler", null)
 
   @define: (newProperties...) ->
     newProperties.forEach (property) -> Private.define KnownProperties, property

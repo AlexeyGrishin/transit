@@ -1,4 +1,6 @@
 sinon = require('sinon')
+Request = require('../src/transit/request')
+Response = require('../src/transit/response')
 
 module.exports =
   serverStub: -> {
@@ -22,6 +24,18 @@ module.exports =
         stub[m] = sinon.stub(stub, m)
     stub
 
+  requestStub: (data, handlers = []) ->
+    new Request(5, data, handlers)
+
+  transit:
+    extendRequest: (props...) ->
+      Request.define props...
+
+  responseStub: () ->
+    new Response sinon.spy(), sinon.spy()
+
   populate: ->
     global.serverStub = @serverStub
     global.serverMock = @serverMock
+    global.requestStub = @requestStub
+    global.responseStub = @responseStub
