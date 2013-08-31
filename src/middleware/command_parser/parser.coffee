@@ -40,7 +40,7 @@ module.exports =
         for arg, index in args
           if @args[index]
             map[@args[index]] = arg
-          else
+          else if @restArg
             map[@restArg].push arg
         args: map
         cb: cb

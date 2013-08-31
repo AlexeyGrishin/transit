@@ -46,9 +46,7 @@ class Transit extends EventEmitter
             @_onError(err) if err
           doNext()), -> doNext()
 
-    doNext = (req, res) =>
-      context.req = req if req
-      context.res = res if res
+    doNext = =>
       nextStep = chain.shift()
       return if not nextStep
       process.nextTick =>
@@ -68,10 +66,10 @@ class Transit extends EventEmitter
     @_client().sendBack(userId, data, cb)
 
   extendRequest: (properties...) ->
-    Request.define properties
+    Request.define properties...
 
   extendResponse: (properties...) ->
-    Response.define properties
+    Response.define properties...
 
   receive: (pattern, handler) ->
     if _.isFunction(pattern)
@@ -85,7 +83,11 @@ class Transit extends EventEmitter
 module.exports = ->
   new Transit()
 
-module.exports.doNotWaitForResponse = require('./middleware/do_not_wait_for_response/doNotWaitForResponse')
 module.exports.commandLine = require('./clients/command_line/commandLine')
+module.exports.icq = require('./clients/icq/icq')
+
+module.exports.doNotWaitForResponse = require('./middleware/do_not_wait_for_response/doNotWaitForResponse')
 module.exports.commandParser = require('./middleware/command_parser/commandParser')
 module.exports.render = require('./middleware/renderer/renderer')
+module.exports.html2txt = require('./middleware/html2txt/html2txt')
+module.exports.sessions = require('./middleware/sessions/session_manager')

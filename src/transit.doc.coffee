@@ -1,5 +1,10 @@
 # _Documentation is under construction_
-# **transit** is a express-like framework for im bots
+#
+# **transit** is a express-like framework for im bots.
+#
+# **Example** with command line client (try it!)
+#
+# Example for ICQ client could be [found here](icq.doc.html), but it requires real ICQ account to use
 t = require('./transit')
 transit = t()
 

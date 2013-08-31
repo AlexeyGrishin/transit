@@ -1,6 +1,9 @@
 # This renderer splits output data on several portions, each portion has less or equal characters than specified limit.
+#
 # It could be useful for ICQ clients which have limitations on message size.
+#
 # Data is splitted by lines, so there will be no break inside line.
+#
 # If there is line larger than limit the exception will be thrown
 module.exports = (limit = 2000) ->
   (data, next) ->

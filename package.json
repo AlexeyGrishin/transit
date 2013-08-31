@@ -4,9 +4,10 @@
   "version": "0.1.0",
   "dependencies": {
     "underscore": "*",
-    "oscar": "*",
+    "oscar": "git://github.com/AlexeyGrishin/node-oscar.git",
     "winston": "0.7.x",
-    "coffee-script": "*"
+    "coffee-script": "*",
+    "columnizer": "git://github.com/AlexeyGrishin/columnizer.git"
   },
   "devDependencies": {
     "jasmine-node": "",
