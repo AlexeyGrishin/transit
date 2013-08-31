@@ -1,5 +1,6 @@
 transit
 =======
+[![Build Status](https://travis-ci.org/AlexeyGrishin/transit.png)](https://travis-ci.org/AlexeyGrishin/transit)
 
 Express-like framework for im bots 
 
