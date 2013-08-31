@@ -27,8 +27,8 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
-              <p>This middleware just removes html tags from input data.
-That could be useful for icq because some clients send messages in html.</p>
+              <p>This middleware just removes html tags from input data.</p>
+<p>That could be useful for icq because some clients send messages in html.</p>
 <p><strong>Request extensions</strong></p>
 <p>None</p>
 <p><strong>Response extention</strong></p>
@@ -37,11 +37,12 @@ That could be useful for icq because some clients send messages in html.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="function"><span class="title">html2text</span></span> = (html) -&gt;
-  html.replace(<span class="regexp">/&lt;(?:.|)*?&gt;/gm, '').replace(/\r/gm</span>, <span class="string">''</span>) <span class="keyword">if</span> html
+  html.replace(<span class="regexp">/&lt;(?:.|)*?&gt;/gm, '').replace(/\r/gm, '').replace(/&amp;quot;/gi</span>, <span class="string">'"'</span>) <span class="keyword">if</span> html
 
-module.<span class="function"><span class="title">exports</span></span> = (req, res, next) -&gt;
-  req.attr <span class="string">"data"</span>, html2text(req.data)
-  next()</pre></div></div>
+module.exports = () -&gt;
+  (req, res, next) -&gt;
+    req.attr <span class="string">"data"</span>, html2text(req.data)
+    next()</pre></div></div>
             
         </li>
         
