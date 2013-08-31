@@ -7,11 +7,24 @@ OUTPUT = "docs"
 RENAME =
   'transit.doc.html': 'index.html'
 
+post = ->
+counter = 0
+postProcess = (code) ->
+  if typeof code == 'function'
+    post = code
+  else if typeof code == 'number'
+    counter += code
+    if counter == 0
+      post()
+
+
 generateDoc = (file) ->
+  postProcess +1
   child_process.exec "docco --layout classic -o #{OUTPUT} -e .coffee \"#{file}\"", (err, stdout, stderr) ->
     console.log(stdout)
     console.error(err) if err
     console.error(stderr) if stderr
+    postProcess -1
 
 processFolder = (folder) ->
   for file in fs.readdirSync(folder)
@@ -25,5 +38,6 @@ processFolder = (folder) ->
         generateDoc(newPath)
 
 processFolder(SRC)
-for file, newName of RENAME
-  fs.renameSync path.join(OUTPUT, file), path.join(OUTPUT, newName)
+postProcess ->
+  for file, newName of RENAME
+    fs.renameSync path.join(OUTPUT, file), path.join(OUTPUT, newName)

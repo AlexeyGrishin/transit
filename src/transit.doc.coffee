@@ -3,7 +3,7 @@
 t = require('./transit')
 transit = t()
 
-# Use [command line client](commandLine.doc.html)
+# Use [command line client](commandLine.html)
 transit.use t.commandLine()
 # Use [simple commands parser](commandParser.doc.html)
 transit.use t.commandParser()
