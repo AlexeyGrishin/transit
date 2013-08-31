@@ -8,6 +8,7 @@
 #
 # None
 #
+# ** Example **
 t = require('transit')
 transit = t()
 

@@ -1,9 +1,12 @@
-util = require('../util')
+util = require('../../util')
+common = require('../common')
 sinon = require('sinon')
 require('jasmine-sinon')
-commandParserCtor = require('../../src/middleware/command_parser/commandParser')
+commandParserCtor = require('../../../src/middleware/command_parser/commandParser')
 
 describe "command parser middleware", ->
+
+  common.shallPassCommonMiddlewareTests(commandParserCtor)
 
   beforeEach ->
     @mware = commandParserCtor().install util.transit
@@ -14,6 +17,7 @@ describe "command parser middleware", ->
     req = requestStub("join 5", [{pattern: "join {client}", handler: @handler}])
     @mware req.toJSON(), @resJson, =>
       expect(req.attr("handler")).toEqual(@handler)
+      expect(req.attr("attrs").client).toEqual('5')
       done()
 
 

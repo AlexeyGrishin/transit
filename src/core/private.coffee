@@ -17,7 +17,7 @@ class Private
     properties[property] = "defined"
 
   attr: (name, value) ->
-    throw "There is no property with name '#{name}'" unless @_knownProperties[name]
+    throw new Error("There is no property with name '#{name}'") unless @_knownProperties[name]
     if _.isUndefined value
       @_data[name]
     else

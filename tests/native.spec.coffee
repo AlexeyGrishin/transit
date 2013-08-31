@@ -1,7 +1,10 @@
 require('./util').populate()
 sinon = require('sinon')
 require('jasmine-sinon')
-Transit = require('../src/transit')
+Transit = () ->
+  transit = require('../src/transit')()
+  transit._onError = ()->   # TODO: find another way to hide error messages
+  transit
 
 describe "transit without any other plugins and server", ->
   it "shall throw exception on start", ->

@@ -1,3 +1,12 @@
+# This renderer splits output data on several portions, each portion has less or equal characters than specified limit.
+# It could be useful for ICQ clients which have limitations on message size.
+# Data is splitted by lines, so there will be no break inside line.
+# If there is line larger than limit the exception will be thrown
+module.exports = (limit = 2000) ->
+  (data, next) ->
+    forEachPortion data, limit, (dataPart) ->
+      next(dataPart)
+
 forEachPortion = (text, maxPortionLength, forPortion) ->
   lines = text.split("\n")
   lengths = lines.map (l) -> l.length
@@ -14,7 +23,3 @@ forEachPortion = (text, maxPortionLength, forPortion) ->
     sum += length + CRLF
   forPortion buffer.join("\n") if buffer.length
 
-module.exports = (portion = 2000) ->
-  (data, next) ->
-    forEachPortion data, portion, (dataPart) ->
-      next(dataPart)

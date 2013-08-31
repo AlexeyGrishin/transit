@@ -1,8 +1,18 @@
+# This middleware allows register user handlers on commands using patterns like the following:
+#
+# **Request extensions**
+#
+# None
+#
+# **Response extention**
+#
+# None
+#
+# ** Example **
 t = require('transit')
 transit = t()
 transit.use t.commandLine()
 transit.use t.commandParser()
-# This middleware allows register user handlers on commands using patterns like the following:
 
 # * simple command without arguments
 transit.receive 'hello', (req, res) ->

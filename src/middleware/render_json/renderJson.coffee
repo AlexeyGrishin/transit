@@ -1,4 +1,7 @@
+# This renderer just stringifies data if it is object
 module.exports = () ->
-  (data, next) ->
-    data = JSON.stringify(data, null, 4) if typeof data == 'object'
-    next(data)
+  (data) ->
+    if typeof data == 'object'
+      JSON.stringify(data, null, 4)
+    else
+      data

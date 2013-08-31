@@ -1,3 +1,4 @@
+# _Documentation is under construction_
 # **transit** is a express-like framework for im bots
 t = require('./transit')
 transit = t()

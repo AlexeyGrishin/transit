@@ -5,17 +5,27 @@
 #   next("<" + data + ">");
 # }
 # ```
+# **Request extensions**
+#
+# None
+#
+# **Response extention**
+#
+# - _render_ - is a function with signature ``render(data)`` where ``data`` is what will be transfered to the client
+#
+# ** Example **
+
 t = require('../../transit')
 transit = t()
 
 transit.use t.commandLine()
 
-# First convert json to string
+# First [convert json to string](renderJson.html)
 transit.use t.render t.render.json(),
-  # Then split by portions - no more than 15 characters for portion.
+  # Then [split by portions](renderSplitByPortions.html) - no more than 50 characters for portion.
   # That could be useful (using bigger numbers of course) for IMs with limited message size
   t.render.splitByPortions(50),
-  # Then wrap each portion with html
+  # Then [wrap each portion with html](renderWrapHtml.html)
   t.render.wrapHtml()
 
 

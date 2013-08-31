@@ -1,5 +1,12 @@
 
 module.exports = (renderers...) ->
+  renderers = renderers.map (r) ->
+    if r.length < 2
+      (data, next) ->
+        next(r(data))
+    else
+      r
+
   install: (transit) ->
     transit.extendResponse "render"
     (req, res, next) ->

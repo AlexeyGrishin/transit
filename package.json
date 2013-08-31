@@ -15,6 +15,7 @@
     "docco": ""
   },
   "scripts": {
-    "test": "jasmine-node --forceexit --coffee tests"
+    "test": "jasmine-node --forceexit --coffee tests",
+    "gen_docs": "coffee generate_docs.coffee"
   }
 }

@@ -28,6 +28,8 @@ module.exports =
     new Request(5, data, handlers)
 
   transit:
+    extendResponse: (props...) ->
+      Response.define props...
     extendRequest: (props...) ->
       Request.define props...
 
