@@ -1,6 +1,6 @@
-Private = require("../src/transit/private")
+Private = require("../../src/core/private")
 
-describe "private object", ->
+xdescribe "private object", ->
 
   beforeEach ->
     @p = new Private()

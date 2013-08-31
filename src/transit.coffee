@@ -1,8 +1,10 @@
 _ = require('underscore')
-Request = require('./transit/request')
-Response = require('./transit/response')
+Request = require('./core/request')
+Response = require('./core/response')
+{EventEmitter} = require('events')
 
-class Transit
+
+class Transit extends EventEmitter
   constructor: ->
     @_handlers = []
     @_chain = []
@@ -25,10 +27,14 @@ class Transit
 
   _onRequest: (userId, data, doneCb) ->
     chain = @_chain.slice()
-    chain.push (req, res) =>
-      handler = req.handler ? @_defaultHandler()
-      throw "There is no handler defined" unless handler
-      handler req, res
+    chain.push (req, res, next) =>
+      if req.command
+        @emit req.command, req, res
+        next()
+      else
+        handler = req.handler ? @_defaultHandler()
+        throw "There is no handler defined" unless handler
+        handler req, res
     chain.push (req, res, next) =>
       doneCb(res.error)
       next()
@@ -67,7 +73,7 @@ class Transit
   extendResponse: (properties...) ->
     Response.define properties
 
-  on: (pattern, handler) ->
+  receive: (pattern, handler) ->
     if _.isFunction(pattern)
       handler = pattern
       pattern = null
@@ -78,3 +84,7 @@ class Transit
 
 module.exports = ->
   new Transit()
+
+module.exports.doNotWaitForResponse = require('./middleware/do_not_wait_for_response/doNotWaitForResponse')
+module.exports.commandLine = require('./servers/command_line/commandLine')
+module.exports.commandParser = require('./middleware/command_parser/commandParser')

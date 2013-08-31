@@ -31,10 +31,29 @@ describe "transit without any other plugins and some server", ->
     expect(server.sendBack).toHaveBeenCalledWith(11, "test", cb)
 
   it "shall allow subscribing on commands", ->
-    transit.on "command", ->
+    transit.receive "command", ->
 
   it "shall allow subscribe default handler", ->
-    transit.on ->
+    transit.receive ->
+
+  describe "on custom command from server", ->
+    beforeEach ->
+      transit.start()
+      @defHandler = sinon.spy (req, res) ->
+        res.done()
+      transit.receive (args...) => @defHandler(args...)
+
+    it "shall not call to user handler", (done) ->
+      server.callback 3, command: "exit", =>
+        expect(@defHandler).not.toHaveBeenCalled()
+        done()
+
+    it "shall call event's listener instead", (done) ->
+      eventHandler = sinon.spy()
+      transit.on "exit", eventHandler
+      server.callback 3, command: "exit", =>
+        expect(eventHandler).toHaveBeenCalled()
+        done()
 
   describe "on data from server", ->
     describe "", ->
@@ -42,7 +61,7 @@ describe "transit without any other plugins and some server", ->
         transit.start()
         @defHandler = sinon.spy (req, res) ->
           res.done()
-        transit.on (args...) => @defHandler(args...)
+        transit.receive (args...) => @defHandler(args...)
 
       it "shall call the default handler on data from server", (done) ->
         server.callback 1, "message", =>
@@ -62,7 +81,7 @@ describe "transit without any other plugins and some server", ->
 
       it "shall not call specific handler", (done) ->
         specHandler = sinon.spy()
-        transit.on specHandler
+        transit.receive specHandler
         server.callback 1, "message", =>
           expect(specHandler).not.toHaveBeenCalled()
           done()
@@ -78,7 +97,7 @@ describe "transit without any other plugins and some server", ->
       transit.start()
       defHandler = sinon.stub()
       defHandler.throws("Error!")
-      transit.on defHandler
+      transit.receive defHandler
       server.callback 1, "message", (err) =>
         expect(err).toEqual name:"Error!"
         done()
@@ -107,7 +126,7 @@ describe "custom middleware as function", ->
       expect(handler).not.toHaveBeenCalled()
       next()
     transit.use middleware
-    transit.on handler
+    transit.receive handler
     server.callback 5, "test", expectNoError(done)
 
 
@@ -121,7 +140,7 @@ describe "custom middleware as function", ->
       req.attr "handler", newHandler
       next()
     transit.use middleware
-    transit.on defHandler
+    transit.receive defHandler
     server.callback 5, "test", =>
       expect(newHandler).toHaveBeenCalled()
       done()
@@ -131,7 +150,7 @@ describe "custom middleware as function", ->
       req.somefield = 55
       next()
     transit.use middleware
-    transit.on (req, res) ->
+    transit.receive (req, res) ->
       expect(req.somefield).toBeUndefined()
       done()
     server.callback 5, "test", expectNoError(done)
@@ -141,7 +160,7 @@ describe "custom middleware as function", ->
       req.attr("somefield", 55)
       next()
     transit.use middleware
-    transit.on (req, res) ->
+    transit.receive (req, res) ->
       res.done()
     server.callback 3, "test", (err) ->
       expect(err).toBeDefined()
@@ -156,7 +175,7 @@ describe "custom middleware as function", ->
           req.attr("somefield", "somevalue")
           next()
     transit.use middleware
-    transit.on (req, res) ->
+    transit.receive (req, res) ->
       expect(req.somefield).toEqual("somevalue")
       done()
     server.callback 5, "test", expectNoError(done)

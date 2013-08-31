@@ -1,7 +1,7 @@
 util = require('../util')
 sinon = require('sinon')
 require('jasmine-sinon')
-commandParserCtor = require('../../src/command_processors/commandParser')
+commandParserCtor = require('../../src/middleware/command_parser/commandParser')
 
 describe "command parser middleware", ->
 
@@ -22,3 +22,10 @@ describe "command parser middleware", ->
     @mware req.toJSON(), @resJson, =>
       expect(req.attr("handler")).toBeUndefined()
       done()
+
+  it "shall do nothing if request is a command", (done) ->
+    req = requestStub(command: "exit", [{pattern: "join {client}", handler: @handler}])
+    @mware req.toJSON(), @resJson, =>
+      expect(req.attr("handler")).toBeUndefined()
+      done()
+

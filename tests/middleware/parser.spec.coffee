@@ -1,5 +1,5 @@
-parser = require('../../src/command_processors/parser').parseCommand
-parsePattern = require('../../src/command_processors/parser').parsePattern
+parser = require('../../src/middleware/command_parser/parser').parseCommand
+parsePattern = require('../../src/middleware/command_parser/parser').parsePattern
 sinon = require('sinon')
 
 #TODO: redo in jasmine

@@ -1,6 +1,6 @@
 sinon = require('sinon')
-Request = require('../src/transit/request')
-Response = require('../src/transit/response')
+Request = require('../src/core/request')
+Response = require('../src/core/response')
 
 module.exports =
   serverStub: -> {
