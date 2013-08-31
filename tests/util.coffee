@@ -3,9 +3,9 @@ Request = require('../src/core/request')
 Response = require('../src/core/response')
 
 module.exports =
-  serverStub: -> {
+  clientStub: -> {
   install: (transit) ->
-    transit.server(@)
+    transit.client(@)
 
   start: (options) ->
 
@@ -14,8 +14,8 @@ module.exports =
   sendBack: (userId, data, cb) ->
   }
 
-  serverMock: (methods...) ->
-    stub = serverStub()
+  clientMock: (methods...) ->
+    stub = clientStub()
     for m in methods
       if m[0] == "!"
         m = m.substring(1)
@@ -37,7 +37,7 @@ module.exports =
     new Response sinon.spy(), sinon.spy()
 
   populate: ->
-    global.serverStub = @serverStub
-    global.serverMock = @serverMock
+    global.clientStub = @clientStub
+    global.clientMock = @clientMock
     global.requestStub = @requestStub
     global.responseStub = @responseStub

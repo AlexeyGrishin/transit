@@ -14,16 +14,16 @@ class Transit extends EventEmitter
       middleware = middleware.install(@)
     @_chain.push middleware if _.isFunction middleware
 
-  server: (server) ->
-    @_server = -> server
+  client: (client) ->
+    @_client = -> client
     undefined
 
-  _server: ->
-    throw "Please install server"
+  _client: ->
+    throw "Please install client"
 
   start: (options) ->
-    @_server().receive @_onRequest.bind(@)
-    @_server().start options
+    @_client().receive @_onRequest.bind(@)
+    @_client().start options
 
   _onRequest: (userId, data, doneCb) ->
     chain = @_chain.slice()
@@ -65,7 +65,7 @@ class Transit extends EventEmitter
     console.error error?.stack if error?.stack
 
   sendBack: (userId, data, cb) ->
-    @_server().sendBack(userId, data, cb)
+    @_client().sendBack(userId, data, cb)
 
   extendRequest: (properties...) ->
     Request.define properties
@@ -86,6 +86,6 @@ module.exports = ->
   new Transit()
 
 module.exports.doNotWaitForResponse = require('./middleware/do_not_wait_for_response/doNotWaitForResponse')
-module.exports.commandLine = require('./servers/command_line/commandLine')
+module.exports.commandLine = require('./clients/command_line/commandLine')
 module.exports.commandParser = require('./middleware/command_parser/commandParser')
 module.exports.render = require('./middleware/renderer/renderer')

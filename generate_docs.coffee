@@ -2,8 +2,13 @@ fs = require('fs')
 path = require('path')
 child_process = require('child_process')
 
+SRC = "src"
+OUTPUT = "docs"
+RENAME =
+  'transit.doc.html': 'index.html'
+
 generateDoc = (file) ->
-  child_process.exec "docco --layout classic -o docs -e .coffee \"#{file}\"", (err, stdout, stderr) ->
+  child_process.exec "docco --layout classic -o #{OUTPUT} -e .coffee \"#{file}\"", (err, stdout, stderr) ->
     console.log(stdout)
     console.error(err) if err
     console.error(stderr) if stderr
@@ -19,4 +24,6 @@ processFolder = (folder) ->
       if fs.readFileSync(newPath, "utf-8").indexOf("#") == 0
         generateDoc(newPath)
 
-processFolder("src")
+processFolder(SRC)
+for file, newName of RENAME
+  fs.renameSync path.join(OUTPUT, file), path.join(OUTPUT, newName)

@@ -3,17 +3,17 @@
 t = require('./transit')
 transit = t()
 
-# Use [command line server](commandLine.doc.html)
+# Use [command line client](commandLine.doc.html)
 transit.use t.commandLine()
 # Use [simple commands parser](commandParser.doc.html)
 transit.use t.commandParser()
-# Server [does not wait for response from user hander](doNotWaitForResponse.doc.html)
+# client [does not wait for response from user hander](doNotWaitForResponse.doc.html)
 transit.use t.doNotWaitForResponse()
 # Use [renderer](renderer.doc.html)
 transit.use t.renderer()
 
 # Define user handler for 'hello' command.
-# Use __sendBack__ to send data to server. It could be called any amount of times.
+# Use __sendBack__ to send data to client. It could be called any amount of times.
 # See also [Request](request.doc.html) and [Response](response.doc.html) objects reference
 transit.receive 'hello', (req, res) ->
   res.sendBack "Hello #{req.user}"

@@ -2,17 +2,10 @@ oscar = require('oscar')
 {forEachPortion} = require('./parser')
 _ = require('_')
 
-html2text = (html) ->
-  html.replace(/<(?:.|)*?>/gm, '').replace(/\r/gm, '')
-
-#TODO: move out to special middleware
-text2html = (text) ->
-  "<font face='courier'>#{text}</font>"
-
 module.exports = (icqConfig) ->
   throw "You need to provide both login and password for icq account" unless icqConfig?.login? and icqConfig?.password?
   install: (transit) ->
-    transit.server @
+    transit.client @
 
   _onError: (sender) ->
     (err) ->
@@ -30,7 +23,7 @@ module.exports = (icqConfig) ->
 
     @icq.on 'im', (text, sender, flags, ts) =>
       @icq.notifyTyping sender.name, oscar.TYPING_NOTIFY.START
-      @callback sender.name, html2text(text), @_onError(sender).bind(@)
+      @callback sender.name, text, @_onError(sender).bind(@)
     @icq.on 'contactoffline', (sender) =>
       @callback sender.name, command:"exit", @_onError(sender).bind(@)
 
@@ -44,12 +37,5 @@ module.exports = (icqConfig) ->
 
   receive: (@callback) ->
 
-  #TODO: move to another middleware
   sendBack: (userId, data, cb) ->
-    wait = 0
-    errors = []
-    forEachPortion data, 2000, (portion) =>
-      wait++
-      @icq.sendIM userId, text2html(portion), (err, data) ->
-        errors.push err if err
-        cb errors.join(",") if not --wait
+    @icq.sendIM userId, data, cb
