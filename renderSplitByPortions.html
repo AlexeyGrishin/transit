@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>renderSplitByPortions.coffee</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>renderSplitByPortions.coffee</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <p>This renderer splits output data on several portions, each portion has less or equal characters than specified limit.
+It could be useful for ICQ clients which have limitations on message size.
+Data is splitted by lines, so there will be no break inside line.
+If there is line larger than limit the exception will be thrown</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>module.<span class="function"><span class="title">exports</span></span> = (limit = <span class="number">2000</span>) -&gt;
+  (data, next) -&gt;
+    forEachPortion data, limit, (dataPart) -&gt;
+      next(dataPart)
+
+<span class="function"><span class="title">forEachPortion</span></span> = (text, maxPortionLength, forPortion) -&gt;
+  lines = text.split(<span class="string">"\n"</span>)
+  lengths = lines.map (l) -&gt; l.length
+  <span class="keyword">throw</span> <span class="string">"Cannot split text - there are lines larger than specified limit"</span> <span class="keyword">if</span> Math.max.apply(<span class="literal">null</span>, lengths) &gt; maxPortionLength
+  buffer = []
+  sum = <span class="number">0</span>
+  CRLF = <span class="number">1</span>
+  <span class="keyword">for</span> length, index <span class="keyword">in</span> lengths
+    <span class="keyword">if</span> sum + length &gt; maxPortionLength
+      forPortion buffer.join(<span class="string">"\n"</span>)
+      buffer = []
+      sum = <span class="number">0</span>
+    buffer.push lines[index]
+    sum += length + CRLF
+  forPortion buffer.join(<span class="string">"\n"</span>) <span class="keyword">if</span> buffer.length</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

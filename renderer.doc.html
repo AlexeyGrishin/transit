@@ -32,10 +32,18 @@ Could be customized with set of renderers, each renderer is function like follow
 <pre><code>function wrapAngular(data, next) {
   next(&quot;&lt;&quot; + data + &quot;&gt;&quot;);
 }</code></pre>
+<p><strong>Request extensions</strong></p>
+<p>None</p>
+<p><strong>Response extention</strong></p>
+<ul>
+<li><em>render</em> - is a function with signature <code>render(data)</code> where <code>data</code> is what will be transfered to the client</li>
+</ul>
+<p><strong> Example </strong></p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>t = require(<span class="string">'../../transit'</span>)
+            <div class="content"><div class='highlight'><pre>
+t = require(<span class="string">'../../transit'</span>)
 transit = t()
 
 transit.use t.commandLine()</pre></div></div>
@@ -49,7 +57,7 @@ transit.use t.commandLine()</pre></div></div>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <p>First convert json to string</p>
+              <p>First <a href="renderJson.html">convert json to string</a></p>
 
             </div>
             
@@ -64,7 +72,7 @@ transit.use t.commandLine()</pre></div></div>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
-              <p>Then split by portions - no more than 15 characters for portion.
+              <p>Then <a href="renderSplitByPortions.html">split by portions</a> - no more than 50 characters for portion.
 That could be useful (using bigger numbers of course) for IMs with limited message size</p>
 
             </div>
@@ -80,7 +88,7 @@ That could be useful (using bigger numbers of course) for IMs with limited messa
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
-              <p>Then wrap each portion with html</p>
+              <p>Then <a href="renderWrapHtml.html">wrap each portion with html</a></p>
 
             </div>
             
