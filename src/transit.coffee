@@ -88,3 +88,4 @@ module.exports = ->
 module.exports.doNotWaitForResponse = require('./middleware/do_not_wait_for_response/doNotWaitForResponse')
 module.exports.commandLine = require('./servers/command_line/commandLine')
 module.exports.commandParser = require('./middleware/command_parser/commandParser')
+module.exports.render = require('./middleware/renderer/renderer')

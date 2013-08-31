@@ -1,3 +1,4 @@
+# **transit** is a express-like framework for im bots
 t = require('./transit')
 transit = t()
 
@@ -7,6 +8,8 @@ transit.use t.commandLine()
 transit.use t.commandParser()
 # Server [does not wait for response from user hander](doNotWaitForResponse.doc.html)
 transit.use t.doNotWaitForResponse()
+# Use [renderer](renderer.doc.html)
+transit.use t.renderer()
 
 # Define user handler for 'hello' command.
 # Use __sendBack__ to send data to server. It could be called any amount of times.

@@ -15,7 +15,8 @@ processFolder = (folder) ->
     stat = fs.statSync(newPath)
     if stat.isDirectory()
       processFolder(newPath)
-    else if stat.isFile() and file.indexOf(".doc.coffee") > -1
-      generateDoc(newPath)
+    else if stat.isFile()
+      if fs.readFileSync(newPath, "utf-8").indexOf("#") == 0
+        generateDoc(newPath)
 
 processFolder("src")
