@@ -11,7 +11,10 @@
   "devDependencies": {
     "jasmine-node": "",
     "sinon": "*",
-    "jasmine-sinon": ""
-
+    "jasmine-sinon": "",
+    "docco": ""
+  },
+  "scripts": {
+    "test": "jasmine-node --coffee tests"
   }
 }
