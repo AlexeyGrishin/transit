@@ -3,7 +3,7 @@ class UserSession
 
   close: ->
 
-
+#TODO: документация
 class Sessions
   constructor: (@options = {}) ->
     @_sessions = {}

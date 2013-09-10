@@ -5,31 +5,32 @@
 # **Example** with command line client (try it!)
 #
 # Example for ICQ client could be [found here](icq.doc.html), but it requires real ICQ account to use
-t = require('./transit')
-transit = t()
+transit = require('./transit')
+app = transit()
 
 # Use [command line client](commandLine.html)
-transit.use t.commandLine()
+app.use transit.commandLine()
 # Use [simple commands parser](commandParser.doc.html)
-transit.use t.commandParser()
+app.use transit.commandParser()
 # client [does not wait for response from user hander](doNotWaitForResponse.doc.html)
-transit.use t.doNotWaitForResponse()
+app.use transit.doNotWaitForResponse()
 # Use [renderer](renderer.doc.html)
-transit.use t.renderer()
+#app.use transit.renderer()
+app.renderer "braces", (data, options, cb) -> cb(null, "(#{data})")
 
 # Define user handler for 'hello' command.
 # Use __sendBack__ to send data to client. It could be called any amount of times.
 # See also [Request](request.doc.html) and [Response](response.doc.html) objects reference
-transit.receive 'hello', (req, res) ->
-  res.sendBack "Hello #{req.user}"
+app.receive 'hello', (req, res) ->
+  res.braces "Hello #{req.user}"
 
 # Define user handler for 'echo' command. All command arguments (space-separated) will be available in 'params' field.
-transit.receive 'echo {{params}}', (req, res) ->
-  res.sendBack req.attrs.params.join(" ")
+app.receive 'echo {{params}}', (req, res) ->
+  res.braces req.attrs.params.join(" ")
 
 # Define default user handler. It is called in case command is not matched
-transit.receive (req, res) ->
+app.receive (req, res) ->
   res.sendBack "I do not know what is <#{req.data}> :("
 
 
-transit.start()
+app.start()

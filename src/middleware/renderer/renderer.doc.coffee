@@ -15,21 +15,21 @@
 #
 # ** Example **
 
-t = require('../../transit')
-transit = t()
+transit = require('../../transit')
+app = transit()
 
-transit.use t.commandLine()
+app.use transit.commandLine()
 
 # First [convert json to string](renderJson.html)
-transit.use t.render t.render.json(),
+app.use transit.render transit.render.json(),
   # Then [split by portions](renderSplitByPortions.html) - no more than 50 characters for portion.
   # That could be useful (using bigger numbers of course) for IMs with limited message size
-  t.render.splitByPortions(50),
+  transit.render.splitByPortions(50),
   # Then [wrap each portion with html](renderWrapHtml.html)
-  t.render.wrapHtml()
+  transit.render.wrapHtml()
 
 
-transit.receive (req, res) ->
+app.receive (req, res) ->
 # Try to run and type something to get this json in several messages
   res.render {
     message: "Hello",
@@ -37,4 +37,9 @@ transit.receive (req, res) ->
     mime: "application/json"
   }
 
-transit.start()
+app.start()
+
+app.sendBack 1, "without render"
+app.sendBack 1, "with render using render by name", using:"render"
+app.sendBack using:"render"
+app.sendBack 1, "with render as default renderer"

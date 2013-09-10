@@ -1,3 +1,5 @@
+#TODO: хотелось бы иметь озможность указывать опции, типа res.render bug, "bug.ejs"
+#TODO: при вызове transit.sendBack renderer не будет вызван
 
 module.exports = (renderers...) ->
   renderers = renderers.map (r) ->
@@ -6,6 +8,17 @@ module.exports = (renderers...) ->
         next(r(data))
     else
       r
+
+  newRenderer: (transit) ->
+    transit.renderer "render", (data, options, cb) ->
+      renderersToProcess = renderers.slice()
+      renderersToProcess.push (data) ->
+        cb null, data
+      sendFurther = (data, idx) ->
+        renderer = renderersToProcess[idx]
+        renderer data, ((data) -> sendFurther data, idx+1)
+      sendFurther(data, 0)
+    null
 
   install: (transit) ->
     transit.extendResponse "render"
@@ -16,8 +29,7 @@ module.exports = (renderers...) ->
           res.sendBack data
         sendFurther = (data, idx) ->
           renderer = renderersToProcess[idx]
-          renderer data, (data) ->
-            sendFurther data, idx+1
+          renderer data, ((data) -> sendFurther data, idx+1)
         sendFurther(data, 0)
       next()
 

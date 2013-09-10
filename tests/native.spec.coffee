@@ -110,6 +110,71 @@ expectNoError = (done) ->
     expect(err).toBeUndefined()
     done()
 
+
+describe "rendering middleware", ->
+
+  beforeEach ->
+    transit = Transit()
+    client = clientMock("!install", "sendBack", "!receive", "start")
+    transit.use(client)
+    @renderer1 = sinon.spy (dataToRender) ->
+    @ejsRenderer = sinon.spy (dataToRender, options) ->
+    @renderer1Installer = (transit) =>
+      transit.renderer "render1", @renderer1
+      null
+    @ejsRendererInstaller= (transit) =>
+      transit.renderer "ejs", @ejsRenderer
+      null
+
+
+  it "could be registered as used by default", ->
+    transit.use @renderer1Installer
+    transit.use "render1"
+    transit.sendBack 11, "hello"
+    expect(@renderer1).toHaveBeenCalled()
+    expect(@renderer1.args[0][0]).toEqual("hello")
+
+  it "could be called by name", ->
+    transit.use @renderer1Installer
+    transit.use "Render1"
+    transit.use @ejsRendererInstaller
+    transit.sendBack.ejs 11, "hello"
+    expect(@renderer1).not.toHaveBeenCalled()
+    expect(@ejsRenderer).toHaveBeenCalled()
+    expect(@ejsRenderer.args[0][0]).toEqual("hello")
+
+  it "shall accept provided options", ->
+    transit.use @ejsRendererInstaller
+    transit.sendBack.ejs 11, "hello", {flag:true}
+    expect(@ejsRenderer).toHaveBeenCalled()
+    expect(@ejsRenderer.args[0][0]).toEqual("hello")
+    expect(@ejsRenderer.args[0][1]).toEqual {flag:true}
+
+  it "shall be possible to use rendering method in response", (done) ->
+    transit.use @ejsRendererInstaller
+    transit.receive (req, res) ->
+      res.ejs "Answer"
+    transit.start()
+    client.callback 1, "Hello", () =>
+      expect(@ejsRenderer).toHaveBeenCalled()
+      done()
+
+describe "custom middleware as object", ->
+
+  it "could be installed with 'use' call with calling 'install' method", ->
+    obj = {install: sinon.spy((transit) ->)}
+    transit = Transit()
+    transit.use obj
+    expect(obj.install).toHaveBeenCalledWith(transit)
+
+describe "custom middleware installing function (with arity = 1)", ->
+
+  it "shall be called when transfer to use", ->
+    installingFunction = sinon.spy()
+    transit = Transit()
+    transit.use installingFunction
+    expect(installingFunction).toHaveBeenCalledWith(transit)
+
 describe "custom middleware as function", ->
 
   beforeEach ->
@@ -160,7 +225,7 @@ describe "custom middleware as function", ->
 
   it "cannot specify unknown property for request object ", (done) ->
     middleware = (req, res, next) ->
-      req.attr("somefield", 55)
+      req.attr("somefield9", 55)
       next()
     transit.use middleware
     transit.receive (req, res) ->

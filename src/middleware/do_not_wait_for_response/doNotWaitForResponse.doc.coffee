@@ -9,16 +9,16 @@
 # None
 #
 # ** Example **
-t = require('transit')
-transit = t()
+transit = require('transit')
+app = transit()
 
-transit.use transit.commandLine ack:true
+app.use transit.commandLine ack:true
 
 # It does not accept any options
-transit.use transit.doNotWaitForResponse()
+app.use transit.doNotWaitForResponse()
 
-transit.receive (req, res) ->
+app.receive (req, res) ->
   # Note that we dod not call to _res.done()_ here
   console.log "Received #{req.data}"
 
-transit.start()
+app.start()
