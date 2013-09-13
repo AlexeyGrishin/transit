@@ -4,6 +4,11 @@ transit
 
 Express-like framework for im bots.
 
+Install:
+```
+npm install transit-im
+```
+
 Documentation: [here](http://AlexeyGrishin.github.io/transit)
 
 Example:

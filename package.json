@@ -1,5 +1,5 @@
 {
-  "name": "transit",
+  "name": "transit-im",
   "author": "Alexey Grishin <alexey.grishin@gmail.com>",
   "version": "0.1.0",
   "description": "express-like framework for AIM bots creation (ICQ as well)",
