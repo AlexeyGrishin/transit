@@ -1,10 +1,10 @@
 # ICQ client receives messages from other ICQ users and allows to respond them.
 # This is the main scenario the **transit** was created for.
-transit = require('../../transit')
+transit = require('transit')
 app = transit()
 
 # Here we create session object. Session object will be associated with icq contact who writes to us.
-# Session object is available as ``req.session`` in the handler
+# Session object is available as ``req.session`` in the handler.
 class IcqSession
   constructor: (@userId) ->
     console.log "#{@userId} connected"
@@ -14,15 +14,15 @@ class IcqSession
     console.log "#{@userId} disconnected"
 
 # Add icq client. Use icq number as login.
-app.use transit.icq {login: "675819279", password: "chubaka1"}
-# [Convert html to text](html2txt.html)
+app.use transit.icq {login: "__ICQ_NUMBER__", password: "__PASSWORD__"}
+# [Convert html to text](html2txt.html).
 app.use transit.html2txt()
-# [Parse commands](commandParser.doc.html)
+# [Parse commands](commandParser.doc.html).
 app.use transit.commandParser()
-# Use sessions storage (in memory)
+# Use sessions storage (in memory).
 app.use transit.sessions sessionClass: IcqSession
-# When send something back [split by 500 characters](renderSplitByPortions.html) and [wrap each portion with html](renderWrapHtml.html)
-app.renderer transit.chain transit.chain.splitByPortions(500), transit.chain.wrapHtml()
+# When send something back [split by 500 characters](formatSplitByPortions.html) and [wrap each portion with html](formatWrapHtml.html).
+app.formatOutput transit.chain transit.chain.splitByPortions(500), transit.chain.wrapHtml()
 # [Show help](autohelp.html) if user made a mistake or types __help__ command.
 app.use transit.autohelp()
 

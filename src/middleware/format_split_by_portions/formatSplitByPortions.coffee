@@ -1,4 +1,4 @@
-# This renderer splits output data on several portions, each portion has less or equal characters than specified limit.
+# This formatting function splits output data on several portions, each portion has less or equal characters than specified limit.
 #
 # It could be useful for ICQ clients which have limitations on message size.
 #

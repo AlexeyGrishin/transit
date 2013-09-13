@@ -3,12 +3,13 @@
 _ = require('underscore')
 
 module.exports = (options = {}) ->
+# Middleware accepts following options:
   options = _.defaults(options, {
-# Greeting is shown before the list of commands
+# * Greeting is shown before the list of commands.
     greeting: "Here are the commands you may use",
-# Name of command which will show the help
+# * Name of command which will show the help.
     command: "help",
-# If true then help will be also shown on any unknown command
+# * If true then help will be also shown on any unknown command.
     showOnUnknown: true}
   )
   install: (transit) ->

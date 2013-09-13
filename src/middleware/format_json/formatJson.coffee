@@ -1,4 +1,4 @@
-# This renderer just stringifies data if it is object
+# This formatting function just stringifies data if it is object
 module.exports = () ->
   (data) ->
     if typeof data == 'object'

@@ -1,5 +1,5 @@
 # This middleware just returns back the incoming data.
-# Could be useful for renderers debugging.
+# Could be useful for formatters debugging.
 #
 # Ignores all user handlers.
 module.exports = () ->

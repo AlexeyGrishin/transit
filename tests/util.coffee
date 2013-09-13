@@ -28,7 +28,7 @@ module.exports =
     new Request(5, data, handlers)
 
   transit:
-    renderer: (method, arg) ->
+    formatOutput: (method, arg) ->
     extendResponse: (props...) ->
       Response.define props...
     extendRequest: (props...) ->

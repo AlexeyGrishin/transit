@@ -13,6 +13,7 @@ transit = require('transit')
 app = transit()
 app.use transit.commandLine()
 app.use transit.commandParser()
+app.use transit.autohelp()
 
 # * simple command without arguments
 app.receive 'hello', (req, res) ->

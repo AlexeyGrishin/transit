@@ -8,8 +8,8 @@ class Transit extends EventEmitter
   constructor: ->
     @_handlers = []
     @_chain = []
-    @_renderers = {}
-    @_defaultRenderingMethod = (data, options, cb) -> cb(null, data)
+    @_formatters = {}
+    @_defaultFormattingMethod = (data, options, cb) -> cb(null, data)
 
   use: (middleware) ->
     middlewareObject = => middleware.install(@) if not _.isFunction middleware
@@ -21,16 +21,15 @@ class Transit extends EventEmitter
     @_client = -> client
     undefined
 
-  #TODO: rename 'client' to 'input' and 'renderer' to 'output'
-  renderer: (method, renderer) ->
+  formatOutput: (method, formatter) ->
     if _.isFunction method
-      renderer = method
+      formatter = method
       method = "_default"
-      @_defaultRenderingMethod = renderer
-    @_renderers[method] = renderer
+      @_defaultFormattingMethod = formatter
+    @_formatters[method] = formatter
     @extendResponse method
     @sendBack[method] = (userId, data, options, cb) =>
-      @_send userId, data, renderer, options, cb
+      @_send userId, data, formatter, options, cb
 
   _client: ->
     throw "Please install client"
@@ -60,7 +59,7 @@ class Transit extends EventEmitter
             @_onError(err) if err
           doNext()), -> doNext()
 
-    for name, method of @_renderers
+    for name, method of @_formatters
       context.res.attr name, (data, options) =>
         @_send userId, data, method, options, (err) =>
           @_onError(err) if err
@@ -84,15 +83,15 @@ class Transit extends EventEmitter
     console.error error?.stack if error?.stack
 
   sendBack: (userId, data, options, cb = ->) ->
-    @_send userId, data, @_defaultRenderingMethod, options, cb
+    @_send userId, data, @_defaultFormattingMethod, options, cb
 
-  _send: (userId, data, renderingFunction, options, cb = ->) ->
+  _send: (userId, data, formattingFunction, options, cb = ->) ->
     if _.isFunction(options)
       cb = options
       options = null
-    renderingFunction data, options, (error, dataToRender) =>
+    formattingFunction data, options, (error, dataToFormat) =>
       return cb(error) if error
-      @_sendDataBack userId, dataToRender, cb
+      @_sendDataBack userId, dataToFormat, cb
 
   _sendDataBack: (userId, data, cb) ->
     @_client().sendBack(userId, data, cb)
@@ -120,8 +119,7 @@ module.exports.icq = require('./clients/icq/icq')
 
 module.exports.doNotWaitForResponse = require('./middleware/do_not_wait_for_response/doNotWaitForResponse')
 module.exports.commandParser = require('./middleware/command_parser/commandParser')
-module.exports.render = require('./middleware/renderer/renderer')
-module.exports.chain = require('./middleware/renderer_chain/rendererChain')
+module.exports.chain = require('./middleware/formatter_chain/formatterChain')
 module.exports.html2txt = require('./middleware/html2txt/html2txt')
 module.exports.sessions = require('./middleware/sessions/session_manager')
 module.exports.echo = require('./middleware/echo/echo')

@@ -111,58 +111,58 @@ expectNoError = (done) ->
     done()
 
 
-describe "rendering middleware", ->
+describe "formatting function", ->
 
   beforeEach ->
     transit = Transit()
     client = clientMock("!install", "sendBack", "!receive", "start")
     transit.use(client)
-    @renderer1 = sinon.spy (dataToRender, options, cb) ->
-      cb(null, dataToRender + "_1")
-    @ejsRenderer = sinon.spy (dataToRender, options, cb) ->
-      cb(null, dataToRender + "_2")
-    @renderer1Installer = (transit) =>
-      transit.renderer "render1", @renderer1
+    @formatter1 = sinon.spy (dataToFormat, options, cb) ->
+      cb(null, dataToFormat + "_1")
+    @ejsFormatter = sinon.spy (dataToFormat, options, cb) ->
+      cb(null, dataToFormat + "_2")
+    @formatter1Installer = (transit) =>
+      transit.formatOutput "render1", @formatter1
       null
-    @ejsRendererInstaller= (transit) =>
-      transit.renderer "ejs", @ejsRenderer
+    @ejsFormatterInstaller= (transit) =>
+      transit.formatOutput "ejs", @ejsFormatter
       null
 
 
   it "could be registered as used by default", ->
-    transit.renderer @renderer1
+    transit.formatOutput @formatter1
     transit.sendBack 11, "hello"
-    expect(@renderer1).toHaveBeenCalled()
-    expect(@renderer1.args[0][0]).toEqual("hello")
+    expect(@formatter1).toHaveBeenCalled()
+    expect(@formatter1.args[0][0]).toEqual("hello")
 
-  it "shall send rendered message to client", ->
-    transit.use @renderer1Installer
+  it "shall send formatted message to client", ->
+    transit.use @formatter1Installer
     cb = sinon.spy()
     transit.sendBack.render1 11, "hello", cb
     expect(client.sendBack).toHaveBeenCalledWith(11, "hello_1", cb)
 
   it "could be called by name", ->
-    transit.renderer @renderer1
-    transit.use @ejsRendererInstaller
+    transit.formatOutput @formatter1
+    transit.use @ejsFormatterInstaller
     transit.sendBack.ejs 11, "hello"
-    expect(@renderer1).not.toHaveBeenCalled()
-    expect(@ejsRenderer).toHaveBeenCalled()
-    expect(@ejsRenderer.args[0][0]).toEqual("hello")
+    expect(@formatter1).not.toHaveBeenCalled()
+    expect(@ejsFormatter).toHaveBeenCalled()
+    expect(@ejsFormatter.args[0][0]).toEqual("hello")
 
   it "shall accept provided options", ->
-    transit.use @ejsRendererInstaller
+    transit.use @ejsFormatterInstaller
     transit.sendBack.ejs 11, "hello", {flag:true}
-    expect(@ejsRenderer).toHaveBeenCalled()
-    expect(@ejsRenderer.args[0][0]).toEqual("hello")
-    expect(@ejsRenderer.args[0][1]).toEqual {flag:true}
+    expect(@ejsFormatter).toHaveBeenCalled()
+    expect(@ejsFormatter.args[0][0]).toEqual("hello")
+    expect(@ejsFormatter.args[0][1]).toEqual {flag:true}
 
-  it "shall be possible to use rendering method in response", (done) ->
-    transit.use @ejsRendererInstaller
+  it "shall be possible to use formatting method in response", (done) ->
+    transit.use @ejsFormatterInstaller
     transit.receive (req, res) ->
       res.ejs "Answer"
     transit.start()
     client.callback 1, "Hello", () =>
-      expect(@ejsRenderer).toHaveBeenCalled()
+      expect(@ejsFormatter).toHaveBeenCalled()
       done()
 
 describe "custom middleware as object", ->

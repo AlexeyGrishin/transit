@@ -20,7 +20,8 @@ postProcess = (code) ->
 
 generateDoc = (file) ->
   postProcess +1
-  child_process.exec "docco --layout classic -o #{OUTPUT} -e .coffee \"#{file}\"", (err, stdout, stderr) ->
+  cmd = "docco --layout classic -o #{OUTPUT} -e .coffee \"#{file}\""
+  child_process.exec cmd, (err, stdout, stderr) ->
     console.log(stdout)
     console.error(err) if err
     console.error(stderr) if stderr
