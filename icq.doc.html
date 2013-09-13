@@ -32,8 +32,8 @@ This is the main scenario the <strong>transit</strong> was created for.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>t = require(<span class="string">'../../transit'</span>)
-transit = t()</pre></div></div>
+            <div class="content"><div class='highlight'><pre>transit = require(<span class="string">'transit'</span>)
+app = transit()</pre></div></div>
             
         </li>
         
@@ -45,7 +45,7 @@ transit = t()</pre></div></div>
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
               <p>Here we create session object. Session object will be associated with icq contact who writes to us.
-Session object is available as <code>req.session</code> in the handler</p>
+Session object is available as <code>req.session</code> in the handler.</p>
 
             </div>
             
@@ -70,7 +70,7 @@ Session object is available as <code>req.session</code> in the handler</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>transit.use t.icq {login: <span class="string">"__ICQ_NUMBER__"</span>, password: <span class="string">"__PASSWORD__"</span>}</pre></div></div>
+            <div class="content"><div class='highlight'><pre>app.use transit.icq {login: <span class="string">"__ICQ_NUMBER__"</span>, password: <span class="string">"__PASSWORD__"</span>}</pre></div></div>
             
         </li>
         
@@ -81,11 +81,11 @@ Session object is available as <code>req.session</code> in the handler</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
-              <p><a href="html2txt.html">Convert html to text</a></p>
+              <p><a href="html2txt.html">Convert html to text</a>.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>transit.use t.html2txt()</pre></div></div>
+            <div class="content"><div class='highlight'><pre>app.use transit.html2txt()</pre></div></div>
             
         </li>
         
@@ -96,11 +96,11 @@ Session object is available as <code>req.session</code> in the handler</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
-              <p><a href="commandParser.doc.html">Parse commands</a></p>
+              <p><a href="commandParser.doc.html">Parse commands</a>.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>transit.use t.commandParser()</pre></div></div>
+            <div class="content"><div class='highlight'><pre>app.use transit.commandParser()</pre></div></div>
             
         </li>
         
@@ -111,11 +111,11 @@ Session object is available as <code>req.session</code> in the handler</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
-              <p>Use sessions storage (in memory)</p>
+              <p>Use sessions storage (in memory).</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>transit.use t.sessions sessionClass: IcqSession</pre></div></div>
+            <div class="content"><div class='highlight'><pre>app.use transit.sessions sessionClass: IcqSession</pre></div></div>
             
         </li>
         
@@ -126,11 +126,11 @@ Session object is available as <code>req.session</code> in the handler</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
-              <p>When send something back <a href="renderSplitByPortions.html">split by 500 characters</a> and <a href="renderWrapHtml.html">wrap each portion with html</a></p>
+              <p>When send something back <a href="formatSplitByPortions.html">split by 500 characters</a> and <a href="formatWrapHtml.html">wrap each portion with html</a>.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>transit.use t.render t.render.splitByPortions(<span class="number">500</span>), t.render.wrapHtml()</pre></div></div>
+            <div class="content"><div class='highlight'><pre>app.formatOutput transit.chain transit.chain.splitByPortions(<span class="number">500</span>), transit.chain.wrapHtml()</pre></div></div>
             
         </li>
         
@@ -140,6 +140,21 @@ Session object is available as <code>req.session</code> in the handler</p>
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p><a href="autohelp.html">Show help</a> if user made a mistake or types <strong>help</strong> command.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>app.use transit.autohelp()</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
               </div>
               <p>After start connect to your bot and type him messages like:</p>
 <pre><code>&gt; hello
@@ -161,17 +176,17 @@ Session object is available as <code>req.session</code> in the handler</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>
-transit.receive <span class="string">'hello'</span>, (req, res) -&gt;
-  res.render(<span class="string">"Hello <span class="subst">#{req.session.getName()}</span>"</span>)
+app.receive <span class="string">'hello'</span>, (req, res) -&gt;
+  res.sendBack(<span class="string">"Hello <span class="subst">#{req.session.getName()}</span>"</span>)
 
-transit.receive <span class="string">'callme {name}'</span>, (req, res) -&gt;
+app.receive <span class="string">'callme {name}'</span>, (req, res) -&gt;
   req.session.setName(req.attrs.name)
-  res.render <span class="string">"I'll remember that, <span class="subst">#{req.attrs.name}</span>"</span>
+  res.sendBack <span class="string">"I'll remember that, <span class="subst">#{req.attrs.name}</span>"</span>
 
-transit.receive <span class="string">'bottles {count}'</span>, (req, res) -&gt;
-  res.render ([req.attrs.count.<span class="number">.1</span>].map (n) -&gt; <span class="string">"I have <span class="subst">#{n}</span> bottles of beer. Let's drink one!"</span>).join(<span class="string">"\n"</span>)
+app.receive <span class="string">'bottles {count}'</span>, (req, res) -&gt;
+  res.sendBack ([req.attrs.count.<span class="number">.1</span>].map (n) -&gt; <span class="string">"I have <span class="subst">#{n}</span> bottles of beer. Let's drink one!"</span>).join(<span class="string">"\n"</span>)
 
-transit.start()</pre></div></div>
+app.start()</pre></div></div>
             
         </li>
         

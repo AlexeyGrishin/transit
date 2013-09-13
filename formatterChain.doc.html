@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>formatterChain.doc.coffee</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>formatterChain.doc.coffee</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <p>Allows to make a chain of formatting functions and register it as transit&#39;s formatter, like this:</p>
+<pre><code>app.formatOutput transit.chain uppercase, split, substituteName</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>transit = require(<span class="string">'../../transit'</span>)
+app = transit()
+app.use transit.commandLine()
+app.use transit.echo()</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Chain accepts 3 types of formatting functions:</p>
+<ul>
+<li>Regular ones (have 3 arguments or more)</li>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="function"><span class="title">substituteName</span></span> = (data, options, next) -&gt;
+  next(data.replace(<span class="regexp">/{name}/gi</span>, options?.name ? <span class="string">"Unknown"</span>))</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <ul>
+<li>Functions without options (have 2 arguments)</li>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="function"><span class="title">split</span></span> = (data, next) -&gt;
+  data.split(<span class="string">" "</span>).forEach next</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <ul>
+<li>Simplified functions (have 1 argument)</li>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="function"><span class="title">uppercase</span></span> = (data) -&gt;
+  data.toUpperCase()</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>In most cases it will be enight to use simplified syntax.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>app.formatOutput transit.chain uppercase, split, substituteName
+
+app.start()
+app.sendBack <span class="number">1</span>, <span class="string">"hello, {name}!"</span>, {name: <span class="string">"Alex"</span>}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>will output</p>
+<pre><code>HELLO,
+Alex!</code></pre>
+<p>There is a set of predefined formatting functions you may use:</p>
+<ul>
+<li><a href="formatJson.html">convert json to string</a>.</li>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>app.formatOutput <span class="string">"myFormat"</span>, transit.chain transit.chain.json(),</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <ul>
+<li><a href="formatSplitByPortions.html">split by portions</a> - no more than 50 characters for portion.
+ That could be useful (using bigger numbers of course) for IMs with limited message size.</li>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  transit.chain.splitByPortions(<span class="number">50</span>),</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <ul>
+<li><a href="formatWrapHtml.html">wrap each portion with html</a>.</li>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  transit.chain.wrapHtml()</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Do not forget you may specify a name for formatter and call it by it.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>app.sendBack.myFormat <span class="number">1</span>, {
+  message: <span class="string">"Hello"</span>,
+  type: <span class="string">"greeting"</span>,
+  mime: <span class="string">"application/json"</span>
+}</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

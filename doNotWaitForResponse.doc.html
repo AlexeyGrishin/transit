@@ -36,10 +36,10 @@
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>t = require(<span class="string">'transit'</span>)
-transit = t()
+            <div class="content"><div class='highlight'><pre>transit = require(<span class="string">'transit'</span>)
+app = transit()
 
-transit.use transit.commandLine ack:<span class="literal">true</span></pre></div></div>
+app.use transit.commandLine ack:<span class="literal">true</span></pre></div></div>
             
         </li>
         
@@ -54,9 +54,9 @@ transit.use transit.commandLine ack:<span class="literal">true</span></pre></div
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>transit.use transit.doNotWaitForResponse()
+            <div class="content"><div class='highlight'><pre>app.use transit.doNotWaitForResponse()
 
-transit.receive (req, res) -&gt;</pre></div></div>
+app.receive (req, res) -&gt;</pre></div></div>
             
         </li>
         
@@ -73,7 +73,7 @@ transit.receive (req, res) -&gt;</pre></div></div>
             
             <div class="content"><div class='highlight'><pre>  console.log <span class="string">"Received <span class="subst">#{req.data}</span>"</span>
 
-transit.start()</pre></div></div>
+app.start()</pre></div></div>
             
         </li>
         

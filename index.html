@@ -29,13 +29,13 @@
               </div>
               <p><em>Documentation is under construction</em></p>
 <p><strong>transit</strong> is a express-like framework for im bots.</p>
-<p><strong>Example</strong> with command line client (try it!)</p>
-<p>Example for ICQ client could be <a href="icq.doc.html">found here</a>, but it requires real ICQ account to use</p>
+<p><strong>Example</strong> with command line client (try it!).</p>
+<p>Example for ICQ client could be <a href="icq.doc.html">found here</a>, but it requires real ICQ account to use.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>t = require(<span class="string">'./transit'</span>)
-transit = t()</pre></div></div>
+            <div class="content"><div class='highlight'><pre>transit = require(<span class="string">'transit'</span>)
+app = transit()</pre></div></div>
             
         </li>
         
@@ -46,11 +46,11 @@ transit = t()</pre></div></div>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <p>Use <a href="commandLine.html">command line client</a></p>
+              <p>Use <a href="commandLine.html">command line client</a>.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>transit.use t.commandLine()</pre></div></div>
+            <div class="content"><div class='highlight'><pre>app.use transit.commandLine()</pre></div></div>
             
         </li>
         
@@ -61,11 +61,11 @@ transit = t()</pre></div></div>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
-              <p>Use <a href="commandParser.doc.html">simple commands parser</a></p>
+              <p>Use <a href="commandParser.doc.html">simple commands parser</a>.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>transit.use t.commandParser()</pre></div></div>
+            <div class="content"><div class='highlight'><pre>app.use transit.commandParser()</pre></div></div>
             
         </li>
         
@@ -76,11 +76,11 @@ transit = t()</pre></div></div>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
-              <p>client <a href="doNotWaitForResponse.doc.html">does not wait for response from user hander</a></p>
+              <p>Make client <a href="doNotWaitForResponse.doc.html">does not wait for response from user hander</a>.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>transit.use t.doNotWaitForResponse()</pre></div></div>
+            <div class="content"><div class='highlight'><pre>app.use transit.doNotWaitForResponse()</pre></div></div>
             
         </li>
         
@@ -91,11 +91,12 @@ transit = t()</pre></div></div>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
-              <p>Use <a href="renderer.doc.html">renderer</a></p>
+              <p>Define named custom formatter. Formatter is called before sending data back to client.
+In most cases you would like to set up a <a href="formatterChain.doc.html">chain of formatting functions</a>.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>transit.use t.renderer()</pre></div></div>
+            <div class="content"><div class='highlight'><pre>app.formatOutput <span class="string">"braces"</span>, (data, options, cb) -&gt; cb(<span class="literal">null</span>, <span class="string">"(<span class="subst">#{data}</span>)"</span>)</pre></div></div>
             
         </li>
         
@@ -107,12 +108,11 @@ transit = t()</pre></div></div>
                 <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
               <p>Define user handler for &#39;hello&#39; command.
-Use <strong>sendBack</strong> to send data to client. It could be called any amount of times.
-See also <a href="request.doc.html">Request</a> and <a href="response.doc.html">Response</a> objects reference</p>
+Use <strong>sendBack</strong> to send data to client. It could be called any amount of times.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>transit.receive <span class="string">'hello'</span>, (req, res) -&gt;
+            <div class="content"><div class='highlight'><pre>app.receive <span class="string">'hello'</span>, (req, res) -&gt;
   res.sendBack <span class="string">"Hello <span class="subst">#{req.user}</span>"</span></pre></div></div>
             
         </li>
@@ -124,12 +124,13 @@ See also <a href="request.doc.html">Request</a> and <a href="response.doc.html">
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
-              <p>Define user handler for &#39;echo&#39; command. All command arguments (space-separated) will be available in &#39;params&#39; field.</p>
+              <p>Define user handler for &#39;echo&#39; command. All command arguments (space-separated) will be available in &#39;params&#39; field.
+Here you can see usage of custom formatter <strong>braces</strong> defined above.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>transit.receive <span class="string">'echo {{params}}'</span>, (req, res) -&gt;
-  res.sendBack req.attrs.params.join(<span class="string">" "</span>)</pre></div></div>
+            <div class="content"><div class='highlight'><pre>app.receive <span class="string">'echo {{params}}'</span>, (req, res) -&gt;
+  res.braces req.attrs.params.join(<span class="string">" "</span>)</pre></div></div>
             
         </li>
         
@@ -140,15 +141,63 @@ See also <a href="request.doc.html">Request</a> and <a href="response.doc.html">
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
-              <p>Define default user handler. It is called in case command is not matched</p>
+              <p>Define default user handler. It is called in case command is not matched.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>transit.receive (req, res) -&gt;
+            <div class="content"><div class='highlight'><pre>app.receive (req, res) -&gt;
   res.sendBack <span class="string">"I do not know what is &lt;<span class="subst">#{req.data}</span>&gt; :("</span>
 
+app.use transit.autohelp {showOnUnknown: <span class="literal">false</span>}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Defines event handler. Events are emitted in special cases like user goes offline (<strong>exit</strong> event).
+To emulate that type &#39;:exit&#39; in command line.</p>
 
-transit.start()</pre></div></div>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>app.<span class="literal">on</span> <span class="string">'exit'</span>, (req, res) -&gt;
+  console.log <span class="string">"User <span class="subst">#{req.user}</span> left"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>Starts listening to the client.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>app.start()</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>Also you may take a look at the following builtin middleware:</p>
+<ol>
+<li><a href="echo.html">echo</a></li>
+<li><a href="autohelp.html">autohelp</a></li>
+</ol>
+
+            </div>
             
         </li>
         

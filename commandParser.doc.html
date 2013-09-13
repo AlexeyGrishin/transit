@@ -36,10 +36,11 @@
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>t = require(<span class="string">'transit'</span>)
-transit = t()
-transit.use t.commandLine()
-transit.use t.commandParser()</pre></div></div>
+            <div class="content"><div class='highlight'><pre>transit = require(<span class="string">'transit'</span>)
+app = transit()
+app.use transit.commandLine()
+app.use transit.commandParser()
+app.use transit.autohelp()</pre></div></div>
             
         </li>
         
@@ -56,7 +57,7 @@ transit.use t.commandParser()</pre></div></div>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>transit.receive <span class="string">'hello'</span>, (req, res) -&gt;
+            <div class="content"><div class='highlight'><pre>app.receive <span class="string">'hello'</span>, (req, res) -&gt;
   res.sendBack <span class="string">"Hi!"</span></pre></div></div>
             
         </li>
@@ -76,7 +77,7 @@ If you need to provide argument with space inside just wrap it in quotes, like t
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>transit.receive <span class="string">'add2 {first} {second}'</span>, (req, res) -&gt;
+            <div class="content"><div class='highlight'><pre>app.receive <span class="string">'add2 {first} {second}'</span>, (req, res) -&gt;
   res.sendBack summarize [req.attrs.first, req.attrs.second]</pre></div></div>
             
         </li>
@@ -95,14 +96,14 @@ there shall be only one variable argument in the pattern</li>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>transit.receive <span class="string">'addN {{numbers}}'</span>, (req, res) -&gt;
+            <div class="content"><div class='highlight'><pre>app.receive <span class="string">'addN {{numbers}}'</span>, (req, res) -&gt;
   res.sendBack summarize req.attrs.numbers
 
-transit.receive <span class="string">'stop'</span>, (req, res) -&gt;
+app.receive <span class="string">'stop'</span>, (req, res) -&gt;
   res.sendBack <span class="string">":("</span>
   process.exit()
 
-transit.start()
+app.start()
 
 <span class="function"><span class="title">summarize</span></span> = (numbers) -&gt;
   numbers.map((n)-&gt;parseInt(n)).reduce (a,b) -&gt; a + b</pre></div></div>
