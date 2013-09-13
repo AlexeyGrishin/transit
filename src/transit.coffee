@@ -12,9 +12,6 @@ class Transit extends EventEmitter
     @_defaultRenderingMethod = (data, options, cb) -> cb(null, data)
 
   use: (middleware) ->
-    if typeof middleware == 'string'
-      @_defaultRenderingMethod = @_renderers[middleware]
-      return
     middlewareObject = => middleware.install(@) if not _.isFunction middleware
     middlewareInstallingFunction = => middleware(@) if _.isFunction(middleware) and middleware.length <= 1
     middleware = middlewareObject() ? middlewareInstallingFunction() ? middleware
@@ -26,6 +23,10 @@ class Transit extends EventEmitter
 
   #TODO: rename 'client' to 'input' and 'renderer' to 'output'
   renderer: (method, renderer) ->
+    if _.isFunction method
+      renderer = method
+      method = "_default"
+      @_defaultRenderingMethod = renderer
     @_renderers[method] = renderer
     @extendResponse method
     @sendBack[method] = (userId, data, options, cb) =>
@@ -121,5 +122,7 @@ module.exports.icq = require('./clients/icq/icq')
 module.exports.doNotWaitForResponse = require('./middleware/do_not_wait_for_response/doNotWaitForResponse')
 module.exports.commandParser = require('./middleware/command_parser/commandParser')
 module.exports.render = require('./middleware/renderer/renderer')
+module.exports.chain = require('./middleware/renderer_chain/rendererChain')
 module.exports.html2txt = require('./middleware/html2txt/html2txt')
 module.exports.sessions = require('./middleware/sessions/session_manager')
+module.exports.echo = require('./middleware/echo/echo')

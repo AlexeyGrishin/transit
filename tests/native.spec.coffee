@@ -117,8 +117,10 @@ describe "rendering middleware", ->
     transit = Transit()
     client = clientMock("!install", "sendBack", "!receive", "start")
     transit.use(client)
-    @renderer1 = sinon.spy (dataToRender) ->
-    @ejsRenderer = sinon.spy (dataToRender, options) ->
+    @renderer1 = sinon.spy (dataToRender, options, cb) ->
+      cb(null, dataToRender + "_1")
+    @ejsRenderer = sinon.spy (dataToRender, options, cb) ->
+      cb(null, dataToRender + "_2")
     @renderer1Installer = (transit) =>
       transit.renderer "render1", @renderer1
       null
@@ -128,15 +130,19 @@ describe "rendering middleware", ->
 
 
   it "could be registered as used by default", ->
-    transit.use @renderer1Installer
-    transit.use "render1"
+    transit.renderer @renderer1
     transit.sendBack 11, "hello"
     expect(@renderer1).toHaveBeenCalled()
     expect(@renderer1.args[0][0]).toEqual("hello")
 
-  it "could be called by name", ->
+  it "shall send rendered message to client", ->
     transit.use @renderer1Installer
-    transit.use "Render1"
+    cb = sinon.spy()
+    transit.sendBack.render1 11, "hello", cb
+    expect(client.sendBack).toHaveBeenCalledWith(11, "hello_1", cb)
+
+  it "could be called by name", ->
+    transit.renderer @renderer1
     transit.use @ejsRendererInstaller
     transit.sendBack.ejs 11, "hello"
     expect(@renderer1).not.toHaveBeenCalled()
