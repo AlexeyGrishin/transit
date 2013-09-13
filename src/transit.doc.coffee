@@ -12,19 +12,21 @@ app = transit()
 app.use transit.commandLine()
 # Use [simple commands parser](commandParser.doc.html)
 app.use transit.commandParser()
-# client [does not wait for response from user hander](doNotWaitForResponse.doc.html)
+# Make client [does not wait for response from user hander](doNotWaitForResponse.doc.html)
 app.use transit.doNotWaitForResponse()
-# Use [renderer](renderer.doc.html)
-#app.use transit.renderer()
+
+# Define named custom renderer. Renderer is called before sending data back to client.
+# In most cases you would like to set up a [chain of rendering functions](rendererChain.doc.html).
 app.renderer "braces", (data, options, cb) -> cb(null, "(#{data})")
 
 # Define user handler for 'hello' command.
 # Use __sendBack__ to send data to client. It could be called any amount of times.
 # See also [Request](request.doc.html) and [Response](response.doc.html) objects reference
 app.receive 'hello', (req, res) ->
-  res.braces "Hello #{req.user}"
+  res.sendBack "Hello #{req.user}"
 
 # Define user handler for 'echo' command. All command arguments (space-separated) will be available in 'params' field.
+# Here you can see usage of custom renderer __braces__ defined above.
 app.receive 'echo {{params}}', (req, res) ->
   res.braces req.attrs.params.join(" ")
 
@@ -32,5 +34,16 @@ app.receive 'echo {{params}}', (req, res) ->
 app.receive (req, res) ->
   res.sendBack "I do not know what is <#{req.data}> :("
 
+app.use transit.autohelp {showOnUnknown: false}
 
+# Defines event handler. Events are emitted in special cases like user goes offline (__exit__ event).
+# To emulate that type ':exit' in command line.
+app.on 'exit', (req, res) ->
+  console.log "User #{req.user} left"
+
+# Starts listening to the client
 app.start()
+
+# Also you may take a look at the following builtinn middleware:
+# 1. [echo](echo.html)
+# 1. [autohelp](autohelp.html)

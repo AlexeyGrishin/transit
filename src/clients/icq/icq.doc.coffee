@@ -14,7 +14,7 @@ class IcqSession
     console.log "#{@userId} disconnected"
 
 # Add icq client. Use icq number as login.
-app.use transit.icq {login: "__ICQ_NUMBER__", password: "__PASSWORD__"}
+app.use transit.icq {login: "675819279", password: "chubaka1"}
 # [Convert html to text](html2txt.html)
 app.use transit.html2txt()
 # [Parse commands](commandParser.doc.html)
@@ -22,7 +22,9 @@ app.use transit.commandParser()
 # Use sessions storage (in memory)
 app.use transit.sessions sessionClass: IcqSession
 # When send something back [split by 500 characters](renderSplitByPortions.html) and [wrap each portion with html](renderWrapHtml.html)
-app.use transit.render transit.render.splitByPortions(500), transit.render.wrapHtml()
+app.renderer transit.chain transit.chain.splitByPortions(500), transit.chain.wrapHtml()
+# [Show help](autohelp.html) if user made a mistake or types __help__ command.
+app.use transit.autohelp()
 
 # After start connect to your bot and type him messages like:
 # ```
@@ -44,13 +46,13 @@ app.use transit.render transit.render.splitByPortions(500), transit.render.wrapH
 # ```
 
 app.receive 'hello', (req, res) ->
-  res.render("Hello #{req.session.getName()}")
+  res.sendBack("Hello #{req.session.getName()}")
 
 app.receive 'callme {name}', (req, res) ->
   req.session.setName(req.attrs.name)
-  res.render "I'll remember that, #{req.attrs.name}"
+  res.sendBack "I'll remember that, #{req.attrs.name}"
 
 app.receive 'bottles {count}', (req, res) ->
-  res.render ([req.attrs.count..1].map (n) -> "I have #{n} bottles of beer. Let's drink one!").join("\n")
+  res.sendBack ([req.attrs.count..1].map (n) -> "I have #{n} bottles of beer. Let's drink one!").join("\n")
 
 app.start()

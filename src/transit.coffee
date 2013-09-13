@@ -66,7 +66,8 @@ class Transit extends EventEmitter
           @_onError(err) if err
         doNext()
 
-    doNext = =>
+    doNext = (error) =>
+      @_onError(error) if error
       nextStep = chain.shift()
       return if not nextStep
       process.nextTick =>
@@ -82,12 +83,10 @@ class Transit extends EventEmitter
     console.error error ? "Unknown error"
     console.error error?.stack if error?.stack
 
-  #TODO: find all usages of 'sendBack'
-
   sendBack: (userId, data, options, cb = ->) ->
     @_send userId, data, @_defaultRenderingMethod, options, cb
 
-  _send: (userId, data, renderingFunction, options, cb) ->
+  _send: (userId, data, renderingFunction, options, cb = ->) ->
     if _.isFunction(options)
       cb = options
       options = null
@@ -126,3 +125,4 @@ module.exports.chain = require('./middleware/renderer_chain/rendererChain')
 module.exports.html2txt = require('./middleware/html2txt/html2txt')
 module.exports.sessions = require('./middleware/sessions/session_manager')
 module.exports.echo = require('./middleware/echo/echo')
+module.exports.autohelp = require('./middleware/autohelp/autohelp')

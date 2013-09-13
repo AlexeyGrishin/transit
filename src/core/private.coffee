@@ -26,6 +26,7 @@ class Private
 
   toJSON: ->
     json = _.clone @_data
+    json._isPrivate = true
     json.attr = (name, value) =>
       @attr(name, value)
       json[name] = @attr(name)
