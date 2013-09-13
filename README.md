@@ -83,7 +83,6 @@ app.formatOutput transit.chain transit.chain.splitByPortions(500), transit.chain
 app.use transit.autohelp()
 
 # After start connect to your bot and type him messages like:
-# ```
 # > hello
 #   Hello Unknown user 555
 #
@@ -99,7 +98,6 @@ app.use transit.autohelp()
 # > bottles 2
 #   I have 2 bottles of beer. Let's drink one!
 #   I have 1 bottles of beer. Let's drink one!
-# ```
 
 app.receive 'hello', (req, res) ->
   res.sendBack("Hello #{req.session.getName()}")
