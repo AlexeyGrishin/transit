@@ -7,6 +7,9 @@ OUTPUT = "docs"
 RENAME =
   'transit.doc.html': 'index.html'
 
+CMD =
+  'transit.doc.coffee': '--layout linear --css docco-linear.css'
+
 post = ->
 counter = 0
 postProcess = (code) ->
@@ -18,9 +21,9 @@ postProcess = (code) ->
       post()
 
 
-generateDoc = (file) ->
+generateDoc = (file, name) ->
   postProcess +1
-  cmd = "docco --layout classic -o #{OUTPUT} -e .coffee \"#{file}\""
+  cmd = "docco #{CMD[name] ? '--layout classic'} -o #{OUTPUT} -e .coffee \"#{file}\""
   child_process.exec cmd, (err, stdout, stderr) ->
     console.log(stdout)
     console.error(err) if err
@@ -36,7 +39,7 @@ processFolder = (folder) ->
       processFolder(newPath)
     else if stat.isFile()
       if fs.readFileSync(newPath, "utf-8").indexOf("#") == 0
-        generateDoc(newPath)
+        generateDoc(newPath, file)
 
 processFolder(SRC)
 postProcess ->
