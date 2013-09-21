@@ -8,7 +8,7 @@ alias = null
 
 describe "alias middleware", ->
 
-  common.shallPassCommonMiddlewareTests(aliasCtor)
+  common.shallPassCommonMiddlewareTests(->aliasCtor())
 
   beforeEach ->
     alias = aliasCtor()
@@ -44,6 +44,14 @@ describe "alias middleware", ->
       expect(req.toJSON().handlers[0].pattern).toEqual("test {me}")
       done()
 
+  it "shall load aliases on first call and save aliases on change", (done) ->
+    load = sinon.spy(-> [])
+    save = sinon.spy()
+    alias = aliasCtor load, save
+    common.withRequest alias, "alias hi hello", (alias, req, res) ->
+      expect(load).toHaveBeenCalled()
+      expect(save).toHaveBeenCalledWith([pattern: "hi", replacement: "hello"])
+      done()
 
 
 

@@ -1,12 +1,15 @@
 parser = require('../command_parser/parser')
 _ = require('underscore')
+{EventEmitter} = require('events')
 
-class Aliases
+#TODO: persistence for aliases
+class Aliases extends EventEmitter
   constructor: (aliases = [], @options = {define: "alias"}) ->
     @aliases = aliases.map @_compile
 
   define: (alias, replacement) ->
     @aliases.push @_compile pattern:alias, replacement:replacement
+    @emit "change", @aliases.map (a) -> {pattern: a.pattern, replacement: a.replacement}
 
   _compile: (aliasDef) ->
     aliasDef.parsedPattern = parser.parsePattern aliasDef.pattern
@@ -34,13 +37,25 @@ class Aliases
         request.attr "data", newCmd
 
 
+memLoad = -> []
+memSave = ->
 
+module.exports = (load = memLoad, save = memSave) ->
+  global = null
+  if load.length <= 1
+    oldLoad = load
+    load = (name, cb) ->
+      cb(oldLoad(name))
+  getAliases = (req, cb) ->
+    return cb(global) if global
+    load "global", (aliases) ->
+      global = new Aliases(aliases)
+      global.on "change", (aliases) ->
+        save aliases
+      cb(global)
 
-module.exports = ->
-  global = new Aliases()
-  getAliases = (req) ->
-    global
   (req, res, next) ->
     return next() if not req.data
-    getAliases(req).process req
+    getAliases req, (aliases) ->
+      aliases.process req
     next()
