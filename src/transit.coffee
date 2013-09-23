@@ -60,12 +60,15 @@ class Transit extends EventEmitter
             @_onError(err) if err
           doNext()), -> doNext()
 
-    for name, method of @_formatters
+    defineRenderer = (name, method) ->
       context.res.attr name, callbackWrap((data, options) =>
         @_send userId, data, method, options, (err) =>
           @_onError(err) if err
         doNext()
       )
+
+    for name, method of @_formatters
+      defineRenderer name, method
 
     doNext = (error) =>
       @_onError(error) if error
