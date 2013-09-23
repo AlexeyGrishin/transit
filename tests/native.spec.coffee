@@ -156,14 +156,37 @@ describe "formatting function", ->
     expect(@ejsFormatter.args[0][0]).toEqual("hello")
     expect(@ejsFormatter.args[0][1]).toEqual {flag:true}
 
+  testResponse = (handler, afterAll) ->
+    transit.receive handler
+    transit.start()
+    client.callback 1, "Hello", afterAll
+
   it "shall be possible to use formatting method in response", (done) ->
     transit.use @ejsFormatterInstaller
-    transit.receive (req, res) ->
-      res.ejs "Answer"
-    transit.start()
-    client.callback 1, "Hello", () =>
+    testResponse ((req, res) -> res.ejs "Answer"), =>
       expect(@ejsFormatter).toHaveBeenCalled()
+      expect(@ejsFormatter.args[0][0]).toEqual("Answer")
       done()
+
+  describe "shall be possibe to use formatting method in response as callback", ->
+
+    beforeEach ->
+      transit.use @ejsFormatterInstaller
+
+
+    it "in case of error", (done) ->
+      testResponse ((req, res) -> res.ejs.asCallback "error"), =>
+        expect(@ejsFormatter).toHaveBeenCalled()
+        expect(@ejsFormatter.args[0][0]).toEqual("error")
+        done()
+
+
+    it "in case of valid result", (done) ->
+      testResponse ((req, res) -> res.ejs.asCallback null, "ok"), =>
+        expect(@ejsFormatter).toHaveBeenCalled()
+        expect(@ejsFormatter.args[0][0]).toEqual("ok")
+        done()
+
 
 describe "custom middleware as object", ->
 

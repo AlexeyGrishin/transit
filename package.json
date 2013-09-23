@@ -3,6 +3,7 @@
   "author": "Alexey Grishin <alexey.grishin@gmail.com>",
   "version": "0.1.2",
   "description": "express-like framework for AIM bots creation (ICQ as well)",
+  "main": "./src/transit",
   "keywords": ["im", "bot", "icq"],
   "dependencies": {
     "underscore": "*",

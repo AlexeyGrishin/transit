@@ -1,5 +1,5 @@
 # This is example of command line client usage. Try to run it!
-transit = require('transit')
+transit = require('../../transit')
 app = transit()
 
 # Use [command line client](commandLine.html).
@@ -36,10 +36,17 @@ app.formatOutput "braces", (data, options, cb) -> cb(null, "(#{data})")
 app.receive 'hello', (req, res) ->
   res.sendBack "Hello #{req.user}"
 
+
+echo = (params, cb) ->
+  if params.indexOf("error") > -1
+    return cb("Error example")
+  else
+    cb null, params.join(" ")
+
 # Define user handler for 'echo' command. All command arguments (space-separated) will be available in 'params' field.
 # Here you can see usage of custom formatter __braces__ defined above.
 app.receive 'echo {{params}}', (req, res) ->
-  res.braces req.attrs.params.join(" ")
+  echo req.attrs.params, res.braces.asCallback
 
 # Define default user handler. It is called in case command is not matched.
 app.receive (req, res) ->
