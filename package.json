@@ -16,7 +16,8 @@
     "jasmine-node": "",
     "sinon": "*",
     "jasmine-sinon": "",
-    "docco": ""
+    "docco": "",
+    "wrench": ""
   },
   "scripts": {
     "test": "jasmine-node --forceexit --coffee tests",

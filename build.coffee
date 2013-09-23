@@ -1,16 +1,16 @@
 fs = require('fs')
 path = require('path')
+wrench = require('wrench')
 child_process = require('child_process')
 
 rmdir = (dir, cb) ->
+  wrench.rmdirSyncRecursive dir
   console.log "#{dir} removed"
   cb()
 
-mkdir = (dir, cb) ->
-  console.log "#{dir} created"
-  cb()
 
 copyFile = (path, newPath, cb) ->
+  fs.writeFileSync(newPath, fs.readFileSync(path))
   console.log "#{newPath} created"
   cb()
 
