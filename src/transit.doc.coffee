@@ -16,7 +16,7 @@
 # ## Transit application initialization
 # __transit__ app is initialized the similar way as express app:
 #
-transit = require('transit')
+transit = require('transit-im')
 app = transit()
 #
 # ## Clients

@@ -9,7 +9,7 @@
 # None
 #
 # ** Example **
-transit = require('transit')
+transit = require('transit-im')
 app = transit()
 app.use transit.commandLine()
 app.use transit.commandParser()
