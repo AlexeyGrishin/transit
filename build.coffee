@@ -4,7 +4,7 @@ wrench = require('wrench')
 child_process = require('child_process')
 
 rmdir = (dir, cb) ->
-  wrench.rmdirSyncRecursive dir
+  wrench.rmdirSyncRecursive dir, true
   console.log "#{dir} removed"
   cb()
 
