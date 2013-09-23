@@ -5,7 +5,8 @@ module.exports = (parserObject = parser) ->
   parsedCache = null
 
   prepareCache = (handlers) ->
-    return if parsedCache != null
+    #TODO: I have to remove cache, otherwise it is impossible to unregister commands, like it is done for aliases
+    #return if parsedCache != null
     parsedCache = {}
     handlers.filter((h)->h.pattern).forEach (h) =>
       parsed = parser.parsePattern h.pattern, h.handler

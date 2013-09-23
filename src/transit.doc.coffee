@@ -146,6 +146,8 @@ app.use transit.html2txt()
 app.use transit.sessions()
 # [Shows help on commands](autohelp.html)
 app.use transit.autohelp()
+# Allows users to define aliases (TBD, see [example of usage](commandLine.doc.html#section-3))
+app.use transit.alias()
 # [Allows to compose a chain of formatters](formatterChain.doc.html)
 app.use transit.chain()
 # ## Examples

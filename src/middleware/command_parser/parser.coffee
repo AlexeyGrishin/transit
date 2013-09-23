@@ -1,3 +1,5 @@
+_ = require('underscore')
+
 module.exports =
   parseCommand: (command) ->
     firstSpaceIdx = command.indexOf(' ')
@@ -23,6 +25,18 @@ module.exports =
     else
       cmd = command
     return {cmd, args}
+
+
+  processArgs: (commandPattern, argCallback) ->
+    {cmd, args} = @parseCommand(commandPattern)
+    [cmd].concat(args.map(argCallback).map (a) ->
+      if a.indexOf(' ') >= 0
+        '"' + a + '"'
+      else
+        a
+    ).join(" ")
+
+
 
   parsePattern: (pattern, cb = ->) ->
     parts = pattern.split(' ')

@@ -2,13 +2,13 @@ parser = require('../command_parser/parser')
 _ = require('underscore')
 {EventEmitter} = require('events')
 
-#TODO: persistence for aliases
 class Aliases extends EventEmitter
   constructor: (aliases = [], @options = {define: "alias"}) ->
     @aliases = aliases.map @_compile
 
   define: (alias, replacement) ->
-    @aliases.push @_compile pattern:alias, replacement:replacement
+    @aliases = _.reject @aliases, (a) -> a.pattern == alias
+    @aliases.push @_compile pattern:alias, replacement:replacement if replacement
     @emit "change", @aliases.map (a) -> {pattern: a.pattern, replacement: a.replacement}
 
   _compile: (aliasDef) ->
@@ -16,29 +16,39 @@ class Aliases extends EventEmitter
     aliasDef
 
   addToHandlers: (request) ->
-    request.attr "handlers", request.handlers.concat @aliases.map (a) -> pattern:a.pattern, handler: -> throw "Alias handler shall not be called"
+    request.attr "handlers", request.handlers.slice().concat @aliases.map (a) -> pattern:a.pattern, handler: -> throw "Alias handler shall not be called"
 
   process: (request) ->
+    @processCommand(request)
+    @addToHandlers(request)
+
+  processCommand: (request) ->
     return if not request.data
     parsedCommand = parser.parseCommand(request.data)
     if parsedCommand.cmd is @options.define
       @define parsedCommand.args[0], parsedCommand.args[1]
+      # To prevent further processing
+      request.attr "data", null
+      request.attr "command", "alias-defined"
     else
       @replace request, parsedCommand
-    @addToHandlers(request)
 
   replace: (request, {cmd, args}) ->
-    @aliases.forEach (a) ->
+    @aliases.forEach (a) =>
       matched = a.parsedPattern.match cmd, args
       if matched
-        newCmd = a.replacement
-        _.each matched.args, (value, name) ->
-          newCmd = newCmd.replace new RegExp("{#{name}}", "gi"), value
+        newCmd = parser.processArgs a.replacement, (arg) ->
+          _.each matched.args, (value, name) ->
+            arg = arg.replace new RegExp("\\{#{name}\\}", "gi"), value
+          arg
         request.attr "data", newCmd
+        @processCommand request
 
 
 memLoad = -> []
 memSave = ->
+
+GLOBAL = "global"
 
 module.exports = (load = memLoad, save = memSave) ->
   global = null
@@ -46,12 +56,14 @@ module.exports = (load = memLoad, save = memSave) ->
     oldLoad = load
     load = (name, cb) ->
       cb(oldLoad(name))
+
   getAliases = (req, cb) ->
     return cb(global) if global
-    load "global", (aliases) ->
+    aliasesId = GLOBAL
+    load aliasesId, (aliases) ->
       global = new Aliases(aliases)
       global.on "change", (aliases) ->
-        save aliases
+        save aliasesId, aliases
       cb(global)
 
   (req, res, next) ->
