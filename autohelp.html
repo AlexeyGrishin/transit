@@ -27,7 +27,7 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
-              <p>This middleware registers new command (&#39;help&#39; by default) which shwos the list of all
+              <p>This middleware registers new command (&#39;help&#39; by default) which shows the list of all
 possible commands.</p>
 
             </div>
@@ -78,12 +78,12 @@ module.<span class="function"><span class="title">exports</span></span> = (optio
                 <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
               <ul>
-<li>Name of command which will show the help.</li>
+<li>Help string for the help command :)</li>
 </ul>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    command: <span class="string">"help"</span>,</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    helpString: <span class="string">"shows this help"</span></pre></div></div>
             
         </li>
         
@@ -95,6 +95,40 @@ module.<span class="function"><span class="title">exports</span></span> = (optio
                 <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
               <ul>
+<li>Name of command which will show the help.</li>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    command: <span class="string">"help"</span>,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <ul>
+<li>Pattern property with description</li>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    property: <span class="string">"autohelp"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <ul>
 <li>If true then help will be also shown on any unknown command.</li>
 </ul>
 
@@ -104,9 +138,15 @@ module.<span class="function"><span class="title">exports</span></span> = (optio
   )
   install: (transit) -&gt;
     <span class="function"><span class="title">handler</span></span> = (req, res) -&gt;
-      help = [options.greeting + <span class="string">": "</span>].concat(req.handlers.map((h) -&gt; h.pattern).filter(_.identity)).join(<span class="string">"\n - "</span>)
+      <span class="function"><span class="title">toDescription</span></span> = (h) -&gt;
+        descr = [h.pattern]
+        <span class="keyword">if</span> h.autohelp
+          descr.push <span class="string">" - "</span>
+          descr.push h[options.property]
+        descr.join <span class="string">""</span>
+      help = [options.greeting + <span class="string">": "</span>].concat(req.handlers.map(toDescription).filter(_.identity)).join(<span class="string">"\n * "</span>)
       res.sendBack help
-    transit.receive options.command, handler
+    transit.receive options.command, autohelp: options.helpString, handler
     transit.receive handler <span class="keyword">if</span> options.showOnUnknown</pre></div></div>
             
         </li>

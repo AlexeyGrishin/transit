@@ -121,6 +121,9 @@ Its signature is <code>function(userId, data, callback)</code> where
             </div>
             
             <div class="content"><div class='highlight'><pre>  start: -&gt;
+    console.log <span class="string">"Command line client supports special commands to emulate IM interaction:\n"</span> +
+      <span class="string">"  :uid {id} - changes the current user's ID (ICQ number for example)\n"</span> +
+      <span class="string">"  :exit - emulates user goes offline\n"</span>
     rl.<span class="literal">on</span> <span class="string">'line'</span>, (line) =&gt;
       line = line.trim()
       <span class="keyword">if</span> line.indexOf(<span class="string">":uid"</span>) == <span class="number">0</span>

@@ -58,9 +58,9 @@ app = transit()</pre></div></div>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
-              <p>Allows to specify aliases with &#39;alias&#39; command.
-Try to type <code>alias aloha hello</code> and <code>alias &quot;swap {1} {2}&quot; &quot;echo {2} {1}&quot;</code>.
-To delete alias type same command but without target command, this way: <code>alias aloha</code></p>
+              <p>Allows to specify aliases with &#39;alias&#39; command.</p>
+<p>Try to type <code>alias aloha hi &quot;one more alias for hello&quot;</code> and <code>alias &quot;swap {1} {2}&quot; &quot;echo {2} {1}&quot;</code>.</p>
+<p>To delete alias type same command but without target command, this way: <code>alias aloha</code>.</p>
 
             </div>
             
@@ -75,14 +75,14 @@ To delete alias type same command but without target command, this way: <code>al
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
-              <p>First optional function shall load aliases from some storage and return them to callback</p>
+              <p>First optional function shall load aliases from some storage and return them to callback.</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>  (name, cb) -&gt;
     cb [
-      {pattern: <span class="string">"hi"</span>, replacement: <span class="string">"hello"</span>},
-      {pattern: <span class="string">"jecho {param}"</span>, replacement: <span class="string">"echo {param} desu"</span>}
+      {pattern: <span class="string">"hi"</span>, replacement: <span class="string">"hello"</span>, autohelp: <span class="string">"same as 'hello'"</span>},
+      {pattern: <span class="string">"jecho {param}"</span>, replacement: <span class="string">"echo {param} desu"</span>, autohelp: <span class="string">"japaneese version of echo"</span>}
     ]
 ), (</pre></div></div>
             
@@ -95,7 +95,7 @@ To delete alias type same command but without target command, this way: <code>al
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
-              <p>Second optional function will be called when aliases are changed, so you may store them</p>
+              <p>Second optional function will be called when aliases are changed, so you may store them.</p>
 
             </div>
             
@@ -112,7 +112,7 @@ To delete alias type same command but without target command, this way: <code>al
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
-              <p><strong>Note</strong> that this middleware shall be inserted <strong>before</strong> commandParser</p>
+              <p><strong>Note</strong> that this middleware shall be inserted <strong>before</strong> commandParser().</p>
 
             </div>
             
@@ -176,8 +176,15 @@ Use <strong>sendBack</strong> to send data to client. It could be called any amo
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>app.receive <span class="string">'hello'</span>, (req, res) -&gt;
-  res.sendBack <span class="string">"Hello <span class="subst">#{req.user}</span>"</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre>app.receive <span class="string">'hello'</span>, autohelp: <span class="string">"just greeting"</span>, (req, res) -&gt;
+  res.sendBack <span class="string">"Hello <span class="subst">#{req.user}</span>"</span>
+
+
+<span class="function"><span class="title">echo</span></span> = (params, cb) -&gt;
+  <span class="keyword">if</span> params.indexOf(<span class="string">"error"</span>) &gt; -<span class="number">1</span>
+    <span class="keyword">return</span> cb(<span class="string">"Error example"</span>)
+  <span class="keyword">else</span>
+    cb <span class="literal">null</span>, params.join(<span class="string">" "</span>)</pre></div></div>
             
         </li>
         
@@ -193,8 +200,8 @@ Here you can see usage of custom formatter <strong>braces</strong> defined above
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>app.receive <span class="string">'echo {{params}}'</span>, (req, res) -&gt;
-  res.braces req.attrs.params.join(<span class="string">" "</span>)</pre></div></div>
+            <div class="content"><div class='highlight'><pre>app.receive <span class="string">'echo {{params}}'</span>, autohelp: <span class="string">"echoes provided params back"</span>, (req, res) -&gt;
+  echo req.attrs.params, res.braces.asCallback</pre></div></div>
             
         </li>
         
@@ -221,7 +228,8 @@ Here you can see usage of custom formatter <strong>braces</strong> defined above
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-13">&#182;</a>
               </div>
-              <p>Defines the &quot;help&quot; command which lists all existent commands</p>
+              <p>Defines the &quot;help&quot; command which lists all existent commands.
+Note that it shows aliases as well.</p>
 
             </div>
             
