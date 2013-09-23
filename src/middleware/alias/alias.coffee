@@ -3,20 +3,29 @@ _ = require('underscore')
 {EventEmitter} = require('events')
 
 class Aliases extends EventEmitter
-  constructor: (aliases = [], @options = {define: "alias"}) ->
-    @aliases = aliases.map @_compile
+  constructor: (aliases = [], @options = {
+      define: "alias",
+      autohelp: "registers alias of the existent command"
+    }) ->
+      @aliases = aliases.map @_compile
 
-  define: (alias, replacement) ->
-    @aliases = _.reject @aliases, (a) -> a.pattern == alias
-    @aliases.push @_compile pattern:alias, replacement:replacement if replacement
-    @emit "change", @aliases.map (a) -> {pattern: a.pattern, replacement: a.replacement}
+  define: (pattern, replacement, autohelp) ->
+    @aliases = _.reject @aliases, (a) -> a.pattern == pattern
+    alias = {pattern, replacement}
+    alias.autohelp = autohelp if autohelp
+    @aliases.push @_compile alias if replacement
+    @emit "change", @aliases.map (a) -> _.omit(a, "parsedPattern")
 
   _compile: (aliasDef) ->
     aliasDef.parsedPattern = parser.parsePattern aliasDef.pattern
     aliasDef
 
+  _handler: -> throw new Error("Alias handler shall never be called")
+
   addToHandlers: (request) ->
-    request.attr "handlers", request.handlers.slice().concat @aliases.map (a) -> pattern:a.pattern, handler: -> throw "Alias handler shall not be called"
+    aliases = @aliases.map (a) => pattern:a.pattern, autohelp: a.autohelp, handler: -> @_handler
+    self = [{pattern: "alias {newCommand} {existentCommand} {description}", autohelp: @options.autohelp, handler: @_handler}]
+    request.attr "handlers", request.handlers.slice().concat(self).concat(aliases)
 
   process: (request) ->
     @processCommand(request)
@@ -26,7 +35,7 @@ class Aliases extends EventEmitter
     return if not request.data
     parsedCommand = parser.parseCommand(request.data)
     if parsedCommand.cmd is @options.define
-      @define parsedCommand.args[0], parsedCommand.args[1]
+      @define parsedCommand.args...
       # To prevent further processing
       request.attr "data", null
       request.attr "command", "alias-defined"

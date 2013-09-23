@@ -71,7 +71,13 @@ describe "alias middleware", ->
 
   it "shall add new records to request.handlers", (done) ->
     common.withRequest alias, "alias \"test {me}\" \"test user={me}\"", (alias, req, res) ->
-      expect(req.toJSON().handlers[0].pattern).toEqual("test {me}")
+      expect(req.toJSON().handlers[0].pattern).toEqual("alias {newCommand} {existentCommand} {description}")
+      expect(req.toJSON().handlers[1].pattern).toEqual("test {me}")
+      done()
+
+  it "shall provide documentation in handlers as well", (done) ->
+    common.withRequest alias, "alias hi hello help", (alias, req, res) ->
+      expect(req.toJSON().handlers[1].autohelp).toEqual("help")
       done()
 
   it "shall load aliases on first call and save aliases on change", (done) ->

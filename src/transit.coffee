@@ -102,11 +102,26 @@ class Transit extends EventEmitter
   extendResponse: (properties...) ->
     Response.define properties...
 
-  receive: (pattern, handler) ->
-    if _.isFunction(pattern)
+  receive: (pattern, optionsOrHandler, handler) ->
+    options = {}
+    if _.isFunction(handler)
+      # receive patternAsStr, options, handler
+      options = optionsOrHandler
+    else if _.isFunction(pattern)
+      # receive handler
       handler = pattern
       pattern = null
-    @_handlers.push {pattern:pattern,handler:handler}
+    else if _.isObject(pattern)
+      # receive patternAsObj, handler
+      options = pattern
+      {pattern} = pattern
+      handler = optionsOrHandler
+    else
+      # receive patternAsStr, handler
+      handler = optionsOrHandler
+    throw new Error("Handler shall be a function, but it is #{JSON.stringify(handler)}") unless _.isFunction(handler)
+    handlerDef = _.extend _.clone(options), {pattern, handler}
+    @_handlers.push handlerDef
 
   _defaultHandler: ->
     _.findWhere(@_handlers, {pattern:null})?.handler

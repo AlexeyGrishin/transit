@@ -1,4 +1,5 @@
 require('./util').populate()
+_ = require('underscore')
 sinon = require('sinon')
 require('jasmine-sinon')
 Transit = () ->
@@ -58,6 +59,35 @@ describe "transit without any other plugins and some client", ->
         expect(eventHandler).toHaveBeenCalled()
         done()
 
+  describe "shall register pattern for further middleware parsing", ->
+
+    beforeEach ->
+      transit.start()
+
+    handlers = (req) ->
+      _.map req.handlers, (h) -> _.omit(h, "handler")
+
+    test = (setUp, expectedHandlerObj, done) ->
+      handler = sinon.spy()
+      setUp handler
+      stubMware = sinon.spy (req, res, next) ->
+        expect(handlers(req)).toEqual [expectedHandlerObj]
+        next()
+      transit.use stubMware
+      client.callback 1, "msg", =>
+        expect(stubMware).toHaveBeenCalled()
+        done()
+
+    it "as string", (done) ->
+      test ((h) -> transit.receive "pattern1", h), {pattern: "pattern1"}, done
+
+    it "as object", (done) ->
+      test ((h) -> transit.receive {pattern: "pattern2", somedata: "awesome"}, h), {pattern: "pattern2", somedata: "awesome"}, done
+
+    it "as string and additional properties object", (done) ->
+      test ((h) -> transit.receive "pattern3", {awesome: "somedata"}, h), {pattern: "pattern3", awesome: "somedata"}, done
+
+
   describe "on data from client", ->
     describe "", ->
       beforeEach ->
@@ -84,7 +114,7 @@ describe "transit without any other plugins and some client", ->
 
       it "shall not call specific handler", (done) ->
         specHandler = sinon.spy()
-        transit.receive specHandler
+        transit.receive "specific", specHandler
         client.callback 1, "message", =>
           expect(specHandler).not.toHaveBeenCalled()
           done()

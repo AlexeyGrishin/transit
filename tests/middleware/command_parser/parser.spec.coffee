@@ -2,52 +2,58 @@ parser = require('../../../src/middleware/command_parser/parser').parseCommand
 parsePattern = require('../../../src/middleware/command_parser/parser').parsePattern
 sinon = require('sinon')
 
-#TODO: redo in jasmine
-xdescribe "command parser", ->
-  testCommandWithoutArgs: s (test) ->
-    {cmd, args} = parser "go"
-    test.equal cmd, "go"
-    test.deepEqual args, []
+describe "command parser", ->
 
-  testCommandWithArg: s (test) ->
-    {cmd, args} = parser "go ahead"
-    test.equal cmd, "go"
-    test.deepEqual args, ["ahead"]
+  expectParse = (command) ->
+    {cmd, args} = parser command
+    toEqual: (expCmd, expArgs) ->
+      expect(cmd).toEqual(expCmd)
+      expect(args).toEqual(expArgs)
 
-  testCommandWithQuotedArg: s (test) ->
-    {cmd, args} = parser 'go "ahead"'
-    test.equal cmd, "go"
-    test.deepEqual args, ["ahead"]
+  it "shall parse command without arguments", ->
+    expectParse("go").toEqual "go", []
 
-  testCommand2Args: s (test) ->
-    {cmd, args} = parser 'go home now'
-    test.equal cmd, "go"
-    test.deepEqual args, ["home", "now"]
+  it "shall parse command with arg": ->
+    expectParse("go ahead").toEqual "go", ["ahead"]
 
-  testCommandWithSpacedQuotedArg: s (test) ->
-    {cmd, args} = parser 'go "home now"'
-    test.equal cmd, "go"
-    test.deepEqual args, ["home now"]
+  it "shall parse command with quoted arg": ->
+    expectParse('go "ahead"').toEqual "go", ["ahead"]
 
-  testCommandSeveralArgs: s (test) ->
-    {cmd, args} = parser 'one ring "to rule" "them all"'
-    test.equal cmd, "one"
-    test.deepEqual args, ["ring", "to rule", "them all"]
+  it "shall parse command with 2 args": ->
+    expectParse("go home now").toEqual "go", ["home", "now"]
 
-  testPattern: s (test) ->
-    parsed = parsePattern "go {direction} {speed}"
-    result = parsed.match "go", ["left", "quick"]
-    test.ok(result)
-    test.deepEqual result.args, {direction: "left", speed: "quick"}
+  it "shall parse command with quoted arg with space": ->
+    expectParse('go "home now"').toEqual "go", ["home now"]
 
-  testPatternNoMatch: s (test) ->
-    parsed = parsePattern "go {direction} {speed}"
-    result = parsed.match "og", ["left", "fast"]
-    test.ok(!result)
+  it "shall parse command with several args of different types": ->
+    expectParse('one ring "to rule" "them all"').toEqual "one", ["ring", "to rule", "them all"]
 
-  testPatternRest: s (test) ->
-    parsed = parsePattern "what {the} {{hell}}"
-    result = parsed.match "what", ["is", "the", "main", "question"]
-    test.deepEqual result.args, {the: "is", hell: ["the", "main", "question"]}
+describe "pattern parser", ->
+
+  expectPattern = (pattern) ->
+    parsed = parsePattern pattern
+    toMatch: (cmd, args) ->
+      result = parsed.match cmd, args
+      expect(result).toBeTruthy()
+      withArguments: (map) ->
+        expect(result.args).toEqual(map)
+    not:
+      toMatch: (cmd, args) ->
+        result = parsed.match cmd, args
+        expect(result).toBeFalsy()
+
+  it "shall match same command with args", ->
+    expectPattern("go {direction} {speed}").
+      toMatch("go", ["left", "quick"]).
+      withArguments direction: "left", speed: "quick"
+
+  it "shall not match another command", ->
+    expectPattern("go {direction} {speed}")
+      .not.toMatch("og", ["left", "fast"])
+
+  it "shall correctly match wide argument", ->
+    expectPattern("what {the} {{hell}}")
+      .toMatch("what", ["is", "the", "main", "question"])
+      .withArguments the: "is", hell: ["the", "main", "question"]
 
 

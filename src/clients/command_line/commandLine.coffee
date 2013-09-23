@@ -28,6 +28,9 @@ module.exports = (options = {}) ->
 
   # This method shall start listening to the external clients and call provided callback
   start: ->
+    console.log "Command line client supports special commands to emulate IM interaction:\n" +
+      "  :uid {id} - changes the current user's ID (ICQ number for example)\n" +
+      "  :exit - emulates user goes offline\n"
     rl.on 'line', (line) =>
       line = line.trim()
       if line.indexOf(":uid") == 0
