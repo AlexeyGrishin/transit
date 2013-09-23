@@ -2,6 +2,7 @@ _ = require('underscore')
 Request = require('./core/request')
 Response = require('./core/response')
 {EventEmitter} = require('events')
+callbackWrap = require('./core/callbackWrapper')
 
 
 class Transit extends EventEmitter
@@ -54,16 +55,20 @@ class Transit extends EventEmitter
 
     context =
       req: new Request(userId, data, @_handlers)
-      res: new Response ((message) =>
+      res: new Response callbackWrap((message) =>
           @sendBack userId, message, (err) =>
             @_onError(err) if err
           doNext()), -> doNext()
 
-    for name, method of @_formatters
-      context.res.attr name, (data, options) =>
+    defineRenderer = (name, method) ->
+      context.res.attr name, callbackWrap((data, options) =>
         @_send userId, data, method, options, (err) =>
           @_onError(err) if err
         doNext()
+      )
+
+    for name, method of @_formatters
+      defineRenderer name, method
 
     doNext = (error) =>
       @_onError(error) if error
