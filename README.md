@@ -13,7 +13,7 @@ Documentation: [here](http://AlexeyGrishin.github.io/transit)
 
 Example:
 ```
-transit = require('transit')
+transit = require('transit-im')
 app = transit()
 
 # Use command line client
@@ -56,7 +56,7 @@ Example for ICQ
 ```
 # ICQ client receives messages from other ICQ users and allows to respond them.
 # This is the main scenario the **transit** was created for.
-transit = require('transit')
+transit = require('transit-im')
 app = transit()
 
 # Here we create session object. Session object will be associated with icq contact who writes to us.
